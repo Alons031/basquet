@@ -36,6 +36,8 @@ input{padding:11px;border:2px solid var(--line);border-radius:10px;background:va
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat{border:2px solid var(--line);border-radius:12px;padding:6px;text-align:center}
 .stat.shot{border-color:var(--acc)}
+.stat.col{border-color:var(--c);border-width:3px;background:color-mix(in srgb,var(--c) 14%,transparent)}
+.stat.col .btns button:not(.minus){background:var(--c);color:#111}
 .stat b{display:block;font-size:12px;color:var(--mut);font-weight:600}
 .stat .n{font-size:26px;font-weight:800;margin:0 0 4px}
 .btns{display:flex;gap:6px}
@@ -65,7 +67,8 @@ tr.tot td{font-weight:800;border-top:2px solid var(--hd)}
 <div id="app"></div>
 
 <script>
-const C=[["m1","Tiro de 1 punto"],["m2","Tiro de 2 puntos"],["m3","Tiro de 3 puntos"],["def","Defensa"],["reb","Rebotes"],["ast","Asistencias"],["to","Se le fue alv"]];
+const C=[["m1","Tiro de 1 punto"],["m2","Tiro de 2 puntos"],["m3","Tiro de 3 puntos"],["def","Defensa"],["reb","Rebotes"],["ast","Asistencias"],["fal","Faltas"],["to","Se le fue alv"]];
+const COL={def:"#22c55e",reb:"#f5b700",ast:"#3b82f6",fal:"#ef4444",to:"#a855f7"};
 const KEY="bball_v2";
 let db={roster:[],games:[],cur:{rival:"",date:"",rows:{}}};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)db=s}catch(e){}
@@ -77,15 +80,15 @@ const today=()=>new Date().toISOString().slice(0,10);
 function ask(msg,yes){const o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99";o.innerHTML=`<div style="background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px;max-width:360px;width:100%"><p style="margin:0 0 14px;font-size:17px">${msg}</p><div class="row" style="margin:0"><button class="ghost" id="no">Cancelar</button><button class="primary" id="si" style="flex:1">Aceptar</button></div></div>`;document.body.appendChild(o);o.querySelector("#no").onclick=()=>o.remove();o.querySelector("#si").onclick=()=>{o.remove();yes()}}
 const note=m=>ask(m,()=>{});
 if(!db.cur.date)db.cur.date=today();
-const row=id=>db.cur.rows[id]||(db.cur.rows[id]=zero());
-function d(s){return{pts:s.m1+2*s.m2+3*s.m3,m1:s.m1,m2:s.m2,m3:s.m3,def:s.def,reb:s.reb,ast:s.ast,to:s.to}}
+const row=id=>{const r=db.cur.rows[id]||(db.cur.rows[id]=zero());if(r.fal==null)r.fal=0;return r};
+function d(s){return{pts:s.m1+2*s.m2+3*s.m3,m1:s.m1,m2:s.m2,m3:s.m3,def:s.def,reb:s.reb,ast:s.ast,fal:s.fal||0,to:s.to}}
 const add=(a,b)=>{const r={};C.forEach(c=>r[c[0]]=(a[c[0]]||0)+(b[c[0]]||0));return r};
 
 function table(list,avg,total){
-  const H=["Jugador"].concat(avg?["PJ"]:[],["PTS","1 PT","2 PT","3 PT","DEF","REB","AST","SE LE FUE ALV"]);
+  const H=["Jugador"].concat(avg?["PJ"]:[],["PTS","1 PT","2 PT","3 PT","DEF","REB","AST","FALTAS","SE LE FUE ALV"]);
   const tr=(p,cls)=>{const x=d(p.t),g=avg?p.g:1,f=v=>avg?(v/g).toFixed(1):v;
    return `<tr class="${cls||""}"><td>${esc(p.name)}</td>${avg?`<td>${p.g}</td>`:""}`+
-   [x.pts,x.m1,x.m2,x.m3,x.def,x.reb,x.ast,x.to].map(v=>`<td>${f(v)}</td>`).join("")+`</tr>`};
+   [x.pts,x.m1,x.m2,x.m3,x.def,x.reb,x.ast,x.fal,x.to].map(v=>`<td>${f(v)}</td>`).join("")+`</tr>`};
   let b=list.map(p=>tr(p)).join("");
   if(total&&list.length>1)b+=tr({name:"Equipo",t:list.reduce((a,p)=>add(a,p.t),zero())},"tot");
   return `<div class="wrap"><table><thead><tr>${H.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${b}</tbody></table></div>`}
@@ -95,7 +98,7 @@ function vGame(){
   <div class="row"><input id="nm" placeholder="Nombre del jugador nuevo" maxlength="30" autocomplete="off"><button class="primary" data-act="addp">Agregar jugador</button></div>`;
   if(!db.roster.length)return h+`<div class="empty">Agrega a tus jugadores. Se quedan guardados para todos los partidos.</div>`;
   h+=db.roster.map(p=>{const s=row(p.id);return `<div class="player"><div class="head"><div class="name">${esc(p.name)}</div><div class="pts">${d(s).pts}<small>puntos</small></div></div><div class="grid">`+
-   C.map(c=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":""}"><b>${c[1]}</b><div class="n">${s[c[0]]}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
+   C.map(c=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" ${COL[c[0]]?`style="--c:${COL[c[0]]}"`:""}><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
    `</div><div class="row" style="margin:10px 0 0"><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div>`}).join("");
   return h+`<div class="row"><button class="primary" data-act="end" style="flex:1;padding:15px">Terminar partido y guardar</button></div>`}
 
@@ -123,7 +126,7 @@ document.addEventListener("change",e=>{if(e.target.id==="file"&&e.target.files[0
 document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(b)act(b.dataset.act,b.dataset)});
 function act(a,s){
   if(a==="addp"){const i=document.getElementById("nm"),n=i.value.trim();if(!n)return;db.roster.push({id:"p"+Date.now(),name:n});save();render();document.getElementById("nm").focus()}
-  else if(a==="n"){const r=row(s.id);r[s.k]=Math.max(0,r[s.k]+Number(s.d));save();render()}
+  else if(a==="n"){const r=row(s.id);r[s.k]=Math.max(0,(r[s.k]||0)+Number(s.d));save();render()}
   else if(a==="delp"){const p=db.roster.find(x=>x.id===s.id);ask("¿Quitar a "+esc(p.name)+"? Sus partidos guardados no se borran.",()=>{db.roster=db.roster.filter(x=>x.id!==s.id);delete db.cur.rows[s.id];save();render()})}
   else if(a==="end"){
     const rows=db.roster.map(p=>({id:p.id,name:p.name,s:row(p.id)})).filter(r=>Object.values(r.s).some(v=>v>0));
