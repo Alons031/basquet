@@ -139,7 +139,7 @@ function vGame(){
   h+=db.roster.map(p=>{const s=row(p.id);return `<div class="player"><div class="head"><div class="name">${esc(p.name)}</div><div class="pts">${d(s).pts}<small>puntos</small></div></div><div class="grid">`+
    C.map(c=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" ${COL[c[0]]?`style="--c:${COL[c[0]]}"`:""}><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
    `</div><div class="row" style="margin:10px 0 0"><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div>`}).join("");
-  return h+`<div class="row"><button class="primary" data-act="end" style="flex:1;padding:15px">Terminar partido y guardar</button></div>`}
+  return h+`<div class="row"><button class="primary" data-act="end" style="flex:1;padding:15px">Terminar partido y guardar</button></div><div class="row"><button class="ghost" data-act="delall" style="flex:1;padding:13px;color:#ef4444;border-color:#ef4444">Borrar todos los jugadores</button></div>`}
 
 function agg(){const m={};
   db.games.forEach(g=>g.rows.forEach(r=>{const o=m[r.id]||(m[r.id]={name:r.name,t:zero(),g:0});o.name=r.name;o.t=add(o.t,r.s);o.g++}));
@@ -188,6 +188,7 @@ function act(a,s){
     if(!rows.length){note("Todavía no hay estadísticas que guardar.");return}
     ask("¿Terminar el partido y guardarlo?",()=>{const g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};
     db.games.push(g);db.cur={rival:"",date:today(),rows:{}};save();open=g.id;tab="hist";render()})}
+  else if(a==="delall"){ask("¿Borrar a TODOS los jugadores? Se borran también las estadísticas de este partido. Los partidos ya guardados no se borran.",()=>{db.roster=[];db.cur.rows={};save();render()})}
   else if(a==="open"){open=Number(s.id);render()}
   else if(a==="back"){open=null;render()}
   else if(a==="delg"){ask("¿Borrar este partido? Los promedios se recalculan.",()=>{db.games=db.games.filter(x=>x.id!==Number(s.id));open=null;save();render()})}
