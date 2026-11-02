@@ -462,7 +462,7 @@ function act(a,s){
     askNum({title:`Número de ${p.name?esc(p.name):"este jugador"}`,okText:"Guardar",num:p.num,editId:p.id,onOk:num=>{p.num=num;save();render()}})}
   else if(a==="n"){const r=row(s.id),fb=qInfo().fouls;r[s.k]=Math.max(0,(r[s.k]||0)+Number(s.d));save();render();goUp();if(s.k==="fal"){const f1=qInfo().fouls;if(fb<4&&f1>=4)bonusToast(f1)}}
   else if(a==="bench"){const c=C0(),f0=qInfo().fouls;if(c.bn[s.id])delete c.bn[s.id];else c.bn[s.id]=1;
-    benchPop=s.id;save();render();benchPop=null;const f1=qInfo().fouls;if(f0<4&&f1>=4)bonusToast(f1)}
+    benchPop=s.id;save();render();benchPop=null;goUp();const f1=qInfo().fouls;if(f0<4&&f1>=4)bonusToast(f1)}
   else if(a==="delp"){const p=db.roster.find(x=>x.id===s.id);ask("¿Quitar a "+esc(plabel(p))+"? Sus partidos guardados no se borran.",()=>{db.roster=db.roster.filter(x=>x.id!==s.id);delete db.cur.rows[s.id];delete C0().bn[s.id];delete db.cur.fb[s.id];save();render()})}
   else if(a==="end"){
     const rows=db.roster.map(p=>({id:p.id,name:p.name,num:p.num,s:row(p.id)})).filter(r=>Object.values(r.s).some(v=>v>0));
