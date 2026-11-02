@@ -201,6 +201,7 @@ h3.bh{margin:18px 2px 4px;font-size:18px}
 .tile .tbi svg{display:block;width:18px;height:18px}
 @media (prefers-reduced-motion:reduce){.onb,.onb.anim,.onb.anim svg{animation:none;transition:none}}
 .player,.qb{scroll-margin-top:10px}
+#app,body{overflow-anchor:none}
 </style>
 </head>
 <body>
@@ -304,9 +305,16 @@ const IC_BENCH='<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="21" w
 const onBtn=p=>{const off=!!C0().bn[p.id],nm=p.name||"Jugador";
   return `<button class="onb ${off?"off":"on"}${benchPop===p.id?" anim":""}" data-act="bench" data-id="${p.id}" aria-pressed="${!off}" aria-label="${esc(nm)}: ${off?"en la banca. Toca para ponerlo a jugar":"jugando. Toca para mandarlo a la banca"}" title="${off?"En la banca":"Jugando"}">${off?IC_BENCH:IC_BALL}</button>`};
 
-let upT;
-function goUp(){clearTimeout(upT);upT=setTimeout(()=>{if(tab!=="game")return;const t=document.querySelector(".qb")||document.getElementById("strip");if(t)t.scrollIntoView({behavior:"smooth",block:"start"})},450)}
-function goDown(id,wait){clearTimeout(upT);setTimeout(()=>{const c=document.getElementById("pc"+id);if(c)c.scrollIntoView({behavior:"smooth",block:"start"})},wait)}
+let upT,clT;
+function goUp(){clearTimeout(upT);clearTimeout(clT);
+  upT=setTimeout(()=>{if(tab!=="game")return;
+    const s=document.getElementById("strip");
+    if(s)window.scrollTo({top:Math.max(0,s.getBoundingClientRect().top+window.scrollY-90),behavior:"smooth"});
+    // primero sube hasta los jugadores y ya cuando llegó se cierra la tarjeta (así no se corta la subida)
+    const fin=()=>{window.removeEventListener("scrollend",fin);clearTimeout(clT);setOpen(null)};
+    if("onscrollend" in window)window.addEventListener("scrollend",fin,{once:true});
+    clT=setTimeout(fin,900)},450)}
+function goDown(id,wait){clearTimeout(upT);clearTimeout(clT);setTimeout(()=>{const c=document.getElementById("pc"+id);if(c)c.scrollIntoView({behavior:"smooth",block:"start"})},wait)}
 ["touchstart","wheel"].forEach(ev=>window.addEventListener(ev,()=>clearTimeout(upT),{passive:true}));
 function setOpen(id){
   openP=id;
