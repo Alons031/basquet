@@ -200,6 +200,7 @@ h3.bh{margin:18px 2px 4px;font-size:18px}
 .tile .tbi{position:absolute;top:1px;right:2px;width:18px;height:18px;pointer-events:none;color:#4b5563}
 .tile .tbi svg{display:block;width:18px;height:18px}
 @media (prefers-reduced-motion:reduce){.onb,.onb.anim,.onb.anim svg{animation:none;transition:none}}
+.player,.qb{scroll-margin-top:10px}
 </style>
 </head>
 <body>
@@ -249,7 +250,7 @@ function vGame(){
   if(!db.roster.length)return h+`<div class="empty">Agrega a tus jugadores. Se quedan guardados para todos los partidos.</div>`;
   const qi=qInfo(),qc=C0();
   h+=qBoard([0,1,2,3].map(i=>i<qc.qp.length?qc.qp[i]:(i===qi.q-1&&!qi.done?qi.live:null)),qi.done?-1:qi.q-1,qi.total,qpop);
-  h+=`<div class="strip" id="strip">${db.roster.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div><p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro o una tarjeta para abrirla y cerrarla. Mantén y arrastra los cuadros para ordenarlos.</p>`;
+  h+=`<div class="strip" id="strip">${db.roster.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div><p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos.</p>`;
   h+=db.roster.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}" id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}</div><div class="pts">${d(s).pts}<small>puntos</small></div><span class="chev" aria-hidden="true"></span></div></div><div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
    C.map((c,i)=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" style="--i:${i};${COL[c[0]]?`--c:${COL[c[0]]}`:""}"><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
    `</div><div class="row" style="margin:10px 0 0"><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div></div></div></div>`}).join("");
@@ -270,7 +271,7 @@ function vHist(){
 
 function gstats(g){let ok=0,bad=0,pts=0;
   g.rows.forEach(r=>{const s=r.s;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);
-    ok+=(s.m1||0)+(s.m2||0)+(s.m3||0)+(s.def||0)+(s.reb||0)+(s.ast||0);
+    ok+=(s.def||0)+(s.reb||0)+(s.ast||0);
     bad+=(s.fal||0)+(s.to||0)+(s.mal||0)});
   return `<div class="gst"><span class="ok"><small>ACIERTOS</small><i>${ok}</i></span><span class="bad"><small>ERRORES</small><i>${bad}</i></span><span><small>PUNTOS</small><i>${pts}</i></span></div>`}
 let openP=null;
@@ -281,7 +282,7 @@ const C0=()=>{const c=db.cur;if(!Array.isArray(c.qp))c.qp=[];if(!Array.isArray(c
     if(rem>0)(db.roster||[]).forEach(p=>{const f=(c.rows&&c.rows[p.id]&&c.rows[p.id].fal)||0,t=Math.min(f,rem);if(t>0)c.fb[p.id]=t;rem-=t})}
   return c};
 function qInfo(){const c=C0();let pts=0,fal=0;
-  db.roster.forEach(p=>{const s=db.cur.rows[p.id];if(!s)return;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);if(!c.bn[p.id])fal+=Math.max(0,(s.fal||0)-(c.fb[p.id]||0))});
+  db.roster.forEach(p=>{const s=db.cur.rows[p.id];if(!s)return;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);fal+=Math.max(0,(s.fal||0)-(c.fb[p.id]||0))});
   const sp=c.qp.reduce((a,b)=>a+b,0),done=c.qp.length>=4;
   return{q:done?4:c.qp.length+1,done,live:done?0:Math.max(0,pts-sp),fouls:done?0:fal,total:pts}}
 const tHalf=()=>qInfo().q<=2?"a":"b";
@@ -303,6 +304,10 @@ const IC_BENCH='<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="21" w
 const onBtn=p=>{const off=!!C0().bn[p.id],nm=p.name||"Jugador";
   return `<button class="onb ${off?"off":"on"}${benchPop===p.id?" anim":""}" data-act="bench" data-id="${p.id}" aria-pressed="${!off}" aria-label="${esc(nm)}: ${off?"en la banca. Toca para ponerlo a jugar":"jugando. Toca para mandarlo a la banca"}" title="${off?"En la banca":"Jugando"}">${off?IC_BENCH:IC_BALL}</button>`};
 
+let upT;
+function goUp(){clearTimeout(upT);upT=setTimeout(()=>{if(tab!=="game")return;const t=document.querySelector(".qb")||document.getElementById("strip");if(t)t.scrollIntoView({behavior:"smooth",block:"start"})},450)}
+function goDown(id,wait){clearTimeout(upT);setTimeout(()=>{const c=document.getElementById("pc"+id);if(c)c.scrollIntoView({behavior:"smooth",block:"start"})},wait)}
+["touchstart","wheel"].forEach(ev=>window.addEventListener(ev,()=>clearTimeout(upT),{passive:true}));
 function setOpen(id){
   openP=id;
   document.querySelectorAll(".player").forEach(c=>{const on=c.dataset.id===id;
@@ -355,8 +360,7 @@ function initStrip(){
     const t=D.t,c=D.c,on=D.on;D=null;
     try{strip.releasePointerCapture(e.pointerId)}catch(x){}
     if(!on){
-      if(e.type==="pointerup"){const id=t.dataset.id,was=openP===id;setOpen(was?null:id);
-        if(!was)setTimeout(()=>{const card=document.getElementById("pc"+id);if(card)card.scrollIntoView({behavior:"smooth",block:"start"})},400)}
+      if(e.type==="pointerup"){const id=t.dataset.id,was=openP===id;setOpen(id);goDown(id,was?60:430)}
       return}
     const r=t.getBoundingClientRect();
     c.style.transition="left .14s ease-out,top .14s ease-out,transform .14s ease-out";
@@ -368,7 +372,7 @@ function updScore(){
   let pts=0,ok=0,bad=0;
   db.roster.forEach(p=>{const s=db.cur.rows[p.id];if(!s)return;
     pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);
-    ok+=(s.m1||0)+(s.m2||0)+(s.m3||0)+(s.def||0)+(s.reb||0)+(s.ast||0);
+    ok+=(s.def||0)+(s.reb||0)+(s.ast||0);
     bad+=(s.fal||0)+(s.to||0)+(s.mal||0)});
   updScore.last=updScore.last||{};
   [["ok",ok],["bad",bad],["pts",pts]].forEach(([k,v])=>{
@@ -448,7 +452,7 @@ function act(a,s){
   else if(a==="tgl"){setOpen(openP===s.id?null:s.id)}
   else if(a==="editnum"){const p=db.roster.find(x=>x.id===s.id);if(!p)return;
     askNum({title:`Número de ${p.name?esc(p.name):"este jugador"}`,okText:"Guardar",num:p.num,editId:p.id,onOk:num=>{p.num=num;save();render()}})}
-  else if(a==="n"){const r=row(s.id),fb=qInfo().fouls;r[s.k]=Math.max(0,(r[s.k]||0)+Number(s.d));save();render();if(s.k==="fal"){const f1=qInfo().fouls;if(fb<4&&f1>=4)bonusToast(f1)}}
+  else if(a==="n"){const r=row(s.id),fb=qInfo().fouls;r[s.k]=Math.max(0,(r[s.k]||0)+Number(s.d));save();render();goUp();if(s.k==="fal"){const f1=qInfo().fouls;if(fb<4&&f1>=4)bonusToast(f1)}}
   else if(a==="bench"){const c=C0(),f0=qInfo().fouls;if(c.bn[s.id])delete c.bn[s.id];else c.bn[s.id]=1;
     benchPop=s.id;save();render();benchPop=null;const f1=qInfo().fouls;if(f0<4&&f1>=4)bonusToast(f1)}
   else if(a==="delp"){const p=db.roster.find(x=>x.id===s.id);ask("¿Quitar a "+esc(plabel(p))+"? Sus partidos guardados no se borran.",()=>{db.roster=db.roster.filter(x=>x.id!==s.id);delete db.cur.rows[s.id];delete C0().bn[s.id];delete db.cur.fb[s.id];save();render()})}
