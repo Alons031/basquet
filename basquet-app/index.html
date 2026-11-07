@@ -202,6 +202,37 @@ h3.bh{margin:18px 2px 4px;font-size:18px}
 @media (prefers-reduced-motion:reduce){.onb,.onb.anim,.onb.anim svg{animation:none;transition:none}}
 .player,.qb{scroll-margin-top:10px}
 #app,body{overflow-anchor:none}
+.tabs{gap:3px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1 0 auto;font-size:12.5px;padding:11px 4px;white-space:nowrap}
+@media (max-width:380px){.tabs button{font-size:11.5px;padding:11px 3px}}
+.player{position:relative}
+.hit .name{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.posb{margin-left:0;min-width:34px;height:34px;border-radius:50%;border:2px solid var(--acc2);background:var(--acc2);color:var(--on);font-weight:800;font-size:17px;padding:0 6px;vertical-align:middle;line-height:1;perspective:200px;transition:transform .2s}
+.posb:active{transform:scale(.88)}
+.posb.empty{background:transparent;border-style:dashed;color:var(--mut);font-size:10px;letter-spacing:.04em;border-radius:17px;min-width:40px}
+.posbar{position:absolute;left:10px;right:10px;top:66px;z-index:40;display:flex;gap:6px;background:var(--card);border:2px solid var(--acc2);border-radius:16px;padding:8px;box-shadow:0 12px 28px rgba(0,0,0,.45);visibility:hidden;opacity:0;transform:translateY(-8px) scale(.96);transform-origin:top left;transition:opacity .2s,transform .28s cubic-bezier(.34,1.56,.64,1),visibility 0s .28s}
+.posbar.show{visibility:visible;opacity:1;transform:none;transition-delay:0s}
+.po{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;border:2px solid var(--line);background:transparent;color:inherit;border-radius:12px}
+.po b{font-size:22px;line-height:1}
+.po small{font-size:9px;color:var(--mut);font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.po.on{background:var(--acc2);border-color:var(--acc2);color:var(--on)}
+.po.on small{color:inherit}
+.posbar.show .po{animation:popIn .42s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i)*45ms)}
+@keyframes popIn{from{opacity:0;transform:translateY(12px) scale(.5)}to{opacity:1;transform:none}}
+textarea{width:100%;padding:11px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;line-height:1.4;resize:vertical;min-height:130px}
+textarea.err{border-color:#ef4444}
+.nbox{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
+.nh{margin:0 0 8px;font-size:18px}
+.nlh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px}.nlh .nh{margin:0}
+.note{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;animation:popIn .35s ease-out both}
+.note.editing{border-color:var(--acc2)}
+.nmeta{font-size:13px;color:var(--mut)}
+.ntxt{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 10px;font-size:16px;line-height:1.45}
+.note .row{margin:0;flex-wrap:wrap}
+.nlh .wa{white-space:nowrap;padding:8px 12px}
+.wa{background:#25d366;color:#0b2e13;font-weight:800;padding:10px 14px;border-radius:10px;border:0}
+.note .ghost{padding:10px 12px}
+@media (prefers-reduced-motion:reduce){.posbar,.posbar.show .po,.note{transition:none;animation:none}}
 </style>
 </head>
 <body>
@@ -211,6 +242,7 @@ h3.bh{margin:18px 2px 4px;font-size:18px}
   <button data-tab="avg">Promedios</button>
   <button data-tab="hist">Historial</button>
   <button data-tab="board">Tablero</button>
+  <button data-tab="notes">Notas</button>
 </div>
 <div id="app"></div>
 <div id="score" aria-live="polite"><div class="sb ae" role="button" tabindex="0" aria-label="Aciertos y errores. Toca para ver el detalle"><small>A/E</small><b>0/0</b></div><div class="sb ok" role="button" tabindex="0" aria-label="Aciertos. Toca para ocultar"><small>ACIERTOS</small><b>0</b></div><div class="sb bad" role="button" tabindex="0" aria-label="Errores. Toca para ocultar"><small>ERRORES</small><b>0</b></div><div class="sb pts"><small>PUNTOS</small><b>0</b></div></div>
@@ -252,7 +284,7 @@ function vGame(){
   const qi=qInfo(),qc=C0();
   h+=qBoard([0,1,2,3].map(i=>i<qc.qp.length?qc.qp[i]:(i===qi.q-1&&!qi.done?qi.live:null)),qi.done?-1:qi.q-1,qi.total,qpop);
   h+=`<div class="strip" id="strip">${db.roster.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div><p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos.</p>`;
-  h+=db.roster.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}" id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}</div><div class="pts">${d(s).pts}<small>puntos</small></div><span class="chev" aria-hidden="true"></span></div></div><div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
+  h+=db.roster.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}" id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}${posChip(p)}</div><div class="pts">${d(s).pts}<small>puntos</small></div><span class="chev" aria-hidden="true"></span></div></div>${posBar(p)}<div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
    C.map((c,i)=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" style="--i:${i};${COL[c[0]]?`--c:${COL[c[0]]}`:""}"><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
    `</div><div class="row" style="margin:10px 0 0"><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div></div></div></div>`}).join("");
   return h+`<div class="row"><button class="primary" data-act="end" style="flex:1;padding:15px">Terminar partido y guardar</button></div><div class="row"><button class="qend" data-act="endq"${qi.done?" disabled":""} style="flex:1">${qi.done?"Cuarto 4 terminado":"Terminar cuarto "+qi.q}</button></div><div class="row"><button class="ghost" data-act="delall" style="flex:1;padding:13px;color:#ef4444;border-color:#ef4444">Borrar todos los jugadores</button></div>`}
@@ -440,17 +472,55 @@ function updLeft(){
   box.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const t=e.target.closest(".tk");if(!t)return;e.preventDefault();
     if(t.classList.contains("on"))use(t,0,-44,true);else restore()});
   box.addEventListener("click",e=>{if(e.target.closest(".tk.off"))restore()})})();
+const POSN=["Base","Escolta","Alero","Ala-pívot","Pívot"];
+const posChip=p=>p.pos?`<button class="posb" data-act="posopen" data-id="${p.id}" title="${POSN[p.pos-1]}" aria-label="Posición de ${esc(p.name||"jugador")}: ${p.pos}, ${POSN[p.pos-1]}. Toca para cambiar">${p.pos}</button>`:`<button class="posb empty" data-act="posopen" data-id="${p.id}" aria-label="Elegir la posición de ${esc(p.name||"jugador")}">POS</button>`;
+const posBar=p=>`<div class="posbar" role="group" aria-label="Posición en la cancha">${[1,2,3,4,5].map((n,i)=>`<button class="po${p.pos===n?" on":""}" style="--i:${i}" data-act="pos" data-id="${p.id}" data-p="${n}" aria-label="Posición ${n}, ${POSN[i]}"><b>${n}</b><small>${POSN[i]}</small></button>`).join("")}${p.pos?`<button class="po" style="--i:5" data-act="pos" data-id="${p.id}" data-p="0" aria-label="Quitar la posición"><b>×</b><small>Quitar</small></button>`:""}</div>`;
+
+/* ===== Notas ===== */
+function ensureNotes(){if(!Array.isArray(db.notes))db.notes=[];if(typeof db.nd!=="string")db.nd="";if(db.ne&&!db.notes.some(n=>n.id===db.ne))db.ne=null}
+const fmtT=t=>{const d=new Date(t);return d.toLocaleDateString("es-MX",{day:"numeric",month:"short",year:"numeric"})+" · "+d.toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})};
+const noteTxt=n=>"📝 Observaciones\n"+fmtT(n.t)+"\n\n"+n.text;
+const allTxt=()=>"📝 Observaciones del equipo\n\n"+db.notes.slice().reverse().map(n=>fmtT(n.t)+"\n"+n.text).join("\n\n──────────\n\n");
+function vNotes(){
+  const ed=db.ne?db.notes.find(n=>n.id===db.ne):null;
+  let h=`<div class="nbox"><h3 class="nh">${ed?"Editando nota":"Nueva nota"}</h3><textarea id="nt" rows="6" placeholder="Anotaciones, observaciones, qué corregir, jugadas, recordatorios…" aria-label="Texto de la nota">${esc(db.nd)}</textarea><div class="row" style="margin:8px 0 0"><button class="primary" data-act="nsave" style="flex:1;padding:13px">${ed?"Guardar cambios":"Guardar nota"}</button>${ed?'<button class="ghost" data-act="ncancel">Cancelar</button>':""}</div></div>`;
+  h+=`<div class="nlh"><h3 class="nh">Notas guardadas (${db.notes.length})</h3>${db.notes.length>1?'<button class="wa" data-act="nwa" data-id="all">Enviar todas</button>':""}</div>`;
+  h+=db.notes.length?db.notes.map(n=>`<div class="note${n.id===db.ne?" editing":""}"><div class="nmeta">${fmtT(n.t)}</div><div class="ntxt">${esc(n.text)}</div><div class="row"><button class="wa" data-act="nwa" data-id="${n.id}">WhatsApp</button><button class="ghost" data-act="ncopy" data-id="${n.id}">Copiar</button><button class="ghost" data-act="nedit" data-id="${n.id}">Editar</button><button class="ghost" data-act="ndel" data-id="${n.id}">Borrar</button></div></div>`).join(""):'<p class="mut">Todavía no hay notas guardadas.</p>';
+  return h}
+function copyTxt(t){try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t);return}}catch(e){}
+  const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}a.remove()}
+function sendWA(t){
+  const url="https://wa.me/?text="+encodeURIComponent(t);
+  if(url.length<=3500){window.open(url,"_blank","noopener");return}
+  if(navigator.share){navigator.share({text:t}).catch(()=>{});return}
+  copyTxt(t);toast("info","Texto largo copiado","Pégalo en WhatsApp")}
 function render(){
+  ensureNotes();
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
-  document.getElementById("app").innerHTML=tab==="game"?vGame():tab==="avg"?vAvg():tab==="board"?vBoard():vHist();if(tab==="board")bInit();if(tab==="game")initStrip();updScore();updLeft()}
+  document.getElementById("app").innerHTML=tab==="game"?vGame():tab==="avg"?vAvg():tab==="board"?vBoard():tab==="notes"?vNotes():vHist();if(tab==="board")bInit();if(tab==="game")initStrip();updScore();updLeft()}
 
 document.getElementById("tabs").onclick=e=>{const b=e.target.closest("button");if(b){tab=b.dataset.tab;open=null;render()}};
-document.addEventListener("input",e=>{if(e.target.id==="rival"){db.cur.rival=e.target.value;save()}if(e.target.id==="date"){db.cur.date=e.target.value;save()}});
-document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="nm")act("addp");
+document.addEventListener("input",e=>{if(e.target.id==="nt"){db.nd=e.target.value;e.target.classList.remove("err");save()}if(e.target.id==="rival"){db.cur.rival=e.target.value;save()}if(e.target.id==="date"){db.cur.date=e.target.value;save()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));if(e.key==="Enter"&&e.target.id==="nm")act("addp");
   if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("hit")){e.preventDefault();act("tgl",e.target.dataset)}});
 document.addEventListener("change",e=>{if(e.target.id==="file"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{try{const n=JSON.parse(r.result);if(n.roster&&n.games){db=n;save();render();note("Respaldo cargado.")}}catch(x){note("El archivo no es válido.")}};r.readAsText(e.target.files[0])}});
-document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(b)act(b.dataset.act,b.dataset)});
+document.addEventListener("click",e=>{if(!e.target.closest(".posbar,.posb"))document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));const b=e.target.closest("[data-act]");if(b)act(b.dataset.act,b.dataset)});
 function act(a,s){
+  if(a==="posopen"){const bar=document.querySelector("#pc"+s.id+" .posbar");if(!bar)return;const was=bar.classList.contains("show");
+    document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));
+    if(!was){const hd=bar.parentElement.querySelector(".head");bar.style.top=(hd.offsetTop+hd.offsetHeight+4)+"px";bar.classList.add("show")}return}
+  if(a==="pos"){const p=db.roster.find(x=>x.id===s.id);if(!p)return;p.pos=Number(s.p)||0;save();render();
+    const c=document.querySelector("#pc"+p.id+" .posb");
+    if(c&&p.pos)c.animate([{transform:"rotateX(90deg) scale(.5)",opacity:0},{transform:"rotateX(0) scale(1.3)",opacity:1,offset:.6},{transform:"none"}],{duration:520,easing:"ease-out"});return}
+  if(a==="nsave"){const ta=document.getElementById("nt"),v=(ta?ta.value:db.nd).trim();
+    if(!v){if(ta){ta.classList.add("err");ta.focus()}return}
+    if(db.ne){const n=db.notes.find(x=>x.id===db.ne);if(n){n.text=v;n.u=Date.now()}}else db.notes.unshift({id:"n"+Date.now(),t:Date.now(),text:v});
+    db.nd="";db.ne=null;save();render();toast("info","Nota guardada","Ya puedes enviarla por WhatsApp");return}
+  if(a==="ncancel"){db.ne=null;db.nd="";save();render();return}
+  if(a==="nedit"){const n=db.notes.find(x=>x.id===s.id);if(!n)return;db.ne=n.id;db.nd=n.text;save();render();window.scrollTo({top:0,behavior:"smooth"});const ta=document.getElementById("nt");if(ta)ta.focus({preventScroll:true});return}
+  if(a==="ndel"){ask("¿Borrar esta nota?",()=>{db.notes=db.notes.filter(n=>n.id!==s.id);if(db.ne===s.id){db.ne=null;db.nd=""}save();render()});return}
+  if(a==="ncopy"){const n=db.notes.find(x=>x.id===s.id);if(n){copyTxt(noteTxt(n));toast("info","Nota copiada","Pégala donde quieras")}return}
+  if(a==="nwa"){if(s.id==="all"){if(db.notes.length)sendWA(allTxt())}else{const n=db.notes.find(x=>x.id===s.id);if(n)sendWA(noteTxt(n))}return}
   if(a==="addp"){const n=document.getElementById("nm").value.trim();
     askNum({title:`¿Qué número tiene ${n?esc(n):"el jugador"}?`,okText:"Agregar",onOk:num=>{
       const id="p"+Date.now();db.roster.push({id,name:n,num});save();render();
