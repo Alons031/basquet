@@ -293,6 +293,7 @@ textarea.err{border-color:#ef4444}
 .ln{display:inline-block;background:var(--row);border:1.5px solid var(--line);border-radius:7px;padding:0 6px;margin-right:6px;font-size:13px;font-weight:800;color:var(--mut)}
 .lk{font-size:14px;color:var(--mut)}
 .lr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.lq.q1{background:#1d4ed8;color:#fff}.lq.q2{background:#15803d;color:#fff}.lq.q3{background:#b45309;color:#fff}.lq.q4{background:#7e22ce;color:#fff}
 .lq{font-size:12px;font-weight:800;background:var(--acc2);color:var(--on);border-radius:8px;padding:1px 7px}
 .lr small{font-size:11px;color:var(--mut)}
 .tmpl{display:grid;gap:8px;margin:8px 0 14px}
@@ -337,6 +338,16 @@ th:first-child{background:var(--hd)}
 .miss .mv span{position:absolute;inset:0;display:grid;place-items:center;font-size:23px;font-weight:800;color:var(--ink);line-height:1}
 .miss.drag{border-color:var(--acc)}
 .hit .pts{margin-left:auto;text-align:center;font-size:30px}.hit .pts small{display:block;margin:3px 0 0}
+#score .sw{user-select:none;-webkit-user-select:none;padding:0;overflow:hidden;position:relative;background:var(--hd)}
+#score .swt{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain}
+#score .swt::-webkit-scrollbar{display:none}
+#score .swp{flex:none;width:100%;scroll-snap-align:center;scroll-snap-stop:always;padding:4px 4px 14px;text-align:center}
+#score .swp.fa{background:#9a3412}
+#score .swp b{font-size:24px}
+#score .swp small{font-size:9px}
+#score .dots{position:absolute;left:0;right:0;bottom:4px;display:flex;justify-content:center;gap:5px;pointer-events:none}
+#score .dots i{width:5px;height:5px;border-radius:50%;background:#fff;opacity:.4;transition:opacity .2s}
+#score .dots i.on{opacity:1}
 </style>
 </head>
 <body>
@@ -363,7 +374,7 @@ th:first-child{background:var(--hd)}
   <button data-tab="notes">Notas</button>
 </div>
 <div id="app"></div>
-<div id="score" aria-live="polite"><div class="sb ae" role="button" tabindex="0" aria-label="Aciertos y errores. Toca para ver el detalle"><small>A/E</small><b>0/0</b></div><div class="sb ok" role="button" tabindex="0" aria-label="Aciertos. Toca para ocultar"><small>ACIERTOS</small><b>0</b></div><div class="sb bad" role="button" tabindex="0" aria-label="Errores. Toca para ocultar"><small>ERRORES</small><b>0</b></div><div class="sb pts"><small>PUNTOS</small><b>0</b></div></div>
+<div id="score" aria-live="polite"><div class="sb sw" id="swk" role="group" aria-label="Tiros fallados y puntos totales. Desliza de lado para cambiar"><div class="swt"><div class="swp fa"><small>FALLADOS</small><b>0</b></div><div class="swp pt"><small>PUNTOS TOTAL</small><b>0</b></div></div><div class="dots" aria-hidden="true"><i class="on"></i><i></i></div></div><div class="sb ae" role="button" tabindex="0" aria-label="Aciertos y errores. Toca para ver el detalle"><small>A/E</small><b>0/0</b></div><div class="sb ok" role="button" tabindex="0" aria-label="Aciertos. Toca para ocultar"><small>ACIERTOS</small><b>0</b></div><div class="sb bad" role="button" tabindex="0" aria-label="Errores. Toca para ocultar"><small>ERRORES</small><b>0</b></div><div class="sb pts"><small>PUNTOS</small><b>0</b></div></div>
 
 <div id="lt" hidden><div class="lbx" id="tbox"><div class="lsec"><small>TIEMPOS FUERA</small><div class="tks" id="tks"></div><em id="thint">1.ª mitad · desliza</em></div><div class="lsec fl" id="fl"><small>FALTAS</small><b>0</b></div></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -544,6 +555,9 @@ function updScore(){
     const el=document.querySelector("#score ."+k);el.querySelector("b").textContent=v;
     if(updScore.last[k]!==undefined&&updScore.last[k]!==v){el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
     updScore.last[k]=v});
+  let tf=0;db.roster.forEach(p=>{const s=db.cur.rows[p.id];if(s)tf+=s.tf||0});
+  const swf=document.querySelector("#score .swp.fa b"),swp=document.querySelector("#score .swp.pt b");
+  if(swf)swf.textContent=tf;if(swp)swp.textContent=pts;
   const ae=document.querySelector("#score .ae"),t=ok+"/"+bad;
   ae.querySelector("b").textContent=t;
   if(updScore.last.ae!==undefined&&updScore.last.ae!==t){ae.classList.remove("bump");void ae.offsetWidth;ae.classList.add("bump")}
@@ -701,7 +715,7 @@ function logList(list,live){
   return `<div class="lg">${list.slice().reverse().map(e=>{const p=live?db.roster.find(x=>x.id===e.pid):null,nm=p?p.name:e.name,nu=p?p.num:e.num;
     const who=((nu!=null&&nu!=="")?`<span class="ln">#${esc(String(nu))}</span>`:"")+esc(nm||"Jugador");
     const hm=new Date(e.t).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"});
-    return `<div class="le">${lhead(e,who)}<div class="lr"><span class="lq">C${e.q||1}</span><small>${hm}</small></div></div>`}).join("")}</div>`}
+    return `<div class="le">${lhead(e,who)}<div class="lr"><span class="lq q${Math.min(4,Math.max(1,e.q||1))}">C${e.q||1}</span><small>${hm}</small></div></div>`}).join("")}</div>`}
 function logSum(list){const n={1:0,2:0,3:0};list.forEach(e=>{n[e.pts]++});
   return `<div class="lgs"><div><small>1 PUNTO</small><b>${n[1]}</b></div><div><small>2 PUNTOS</small><b>${n[2]}</b></div><div><small>3 PUNTOS</small><b>${n[3]}</b></div><div class="tt"><small>PUNTOS</small><b>${n[1]+2*n[2]+3*n[3]}</b></div></div>`}
 const logBlock=(list,live)=>`<h3 class="nh" style="margin:16px 0 10px">Bitácora (${list.length})</h3>`+logList(list,live);
@@ -1003,6 +1017,14 @@ function newPlayerFx(id,name,num){
 }
 /* ===== fin animación ===== */
 
+
+/* ===== Cuadro deslizable: fallados / puntos total ===== */
+(function(){const sw=document.getElementById("swk");if(!sw)return;
+  const t=sw.querySelector(".swt"),dots=sw.querySelectorAll(".dots i");
+  const idx=()=>Math.round(t.scrollLeft/Math.max(1,t.clientWidth));
+  t.addEventListener("scroll",()=>{const i=idx();dots.forEach((d,k)=>d.classList.toggle("on",k===i))},{passive:true});
+  sw.addEventListener("click",()=>{t.scrollTo({left:idx()?0:t.clientWidth,behavior:"smooth"})});
+})();
 /* ===== Tiros fallados (arrastra arriba/abajo) ===== */
 const missW=(p,s)=>`<div class="miss" role="spinbutton" tabindex="0" data-id="${p.id}" aria-label="Tiros fallados de ${esc(p.name||"jugador")}. Desliza hacia abajo para sumar y hacia arriba para restar" aria-valuenow="${s.tf||0}" aria-valuemin="0"><div class="mv"><span>${s.tf||0}</span></div><small>FALLADOS</small></div>`;
 function missStep(el,delta){
@@ -1015,14 +1037,14 @@ function missStep(el,delta){
     o.animate([{transform:"none",opacity:1},{transform:`translateY(${dn?"100%":"-100%"})`,opacity:0}],opt);
     n.animate([{transform:`translateY(${dn?"-100%":"100%"})`,opacity:0},{transform:"none",opacity:1}],opt).onfinish=()=>{o.remove()}}
   try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}
-  return true}
+  updScore();return true}
 let missG=null;
 document.addEventListener("pointerdown",e=>{const el=e.target.closest&&e.target.closest(".miss");if(!el)return;
   missG={el,y:e.clientY,id:e.pointerId};el.classList.add("drag");try{el.setPointerCapture(e.pointerId)}catch(x){}});
 document.addEventListener("pointermove",e=>{if(!missG||e.pointerId!==missG.id)return;
+  if(missG.done)return;
   const dy=e.clientY-missG.y;
-  if(dy>=22){if(missStep(missG.el,1)||true)missG.y=e.clientY}
-  else if(dy<=-22){missStep(missG.el,-1);missG.y=e.clientY}});
+  if(Math.abs(dy)>=48){missStep(missG.el,dy>0?1:-1);missG.done=true}});
 const missEnd=e=>{if(missG&&e.pointerId===missG.id){missG.el.classList.remove("drag");missG=null}};
 document.addEventListener("pointerup",missEnd);document.addEventListener("pointercancel",missEnd);
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest(".miss"))e.stopPropagation()},true);
