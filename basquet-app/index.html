@@ -241,15 +241,77 @@ textarea.err{border-color:#ef4444}
 .sv svg{width:16px;height:16px;flex:none}
 .nlh .sv{padding:8px 12px;white-space:nowrap}
 .note .sv{padding:10px 12px}
+
+/* inventario de jugadores */
+.inv{background:#17212e;border:2px solid #2e3b4d;border-radius:14px;padding:8px 10px 10px;margin:0 0 12px;color:#fff;transition:border-color .2s,box-shadow .2s,transform .2s,background .2s}
+.invh{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.invh b{font-size:11px;letter-spacing:.14em;color:#c9d3df}
+.invh span{font-size:11px;font-weight:700;color:#0f1722;background:#9fb3c8;border-radius:999px;padding:1px 8px}
+.invh em{margin-left:auto;font-style:normal;font-size:11px;color:#9aa3b0}
+.invh .h2{display:none;color:#ff8a4c;font-weight:800}
+.inv.armed .h1{display:none}.inv.armed .h2{display:inline}
+.inv.armed{border-color:#ff8a4c;animation:invPulse 1s ease-in-out infinite}
+.inv.hot{background:#20303f;box-shadow:0 0 0 4px rgba(255,138,76,.35),0 0 24px rgba(255,138,76,.35);transform:scale(1.015)}
+.inv.gulp{animation:invGulp .5s ease-out}
+.invs{display:flex;flex-wrap:wrap;gap:8px}
+.slot{width:64px;height:72px;border-radius:12px;background:#0f1722;border:2px solid #33465f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;position:relative;color:#fff;text-align:center}
+.slot b{font-size:22px;line-height:1;font-weight:800;color:#fff}
+.slot span{font-size:10px;color:#c9d3df;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot em{font-style:normal;font-size:10px;font-weight:800;color:#ff8a4c}
+.slot.add{border-style:dashed;border-color:#3a4a60;background:transparent;cursor:default;pointer-events:none}
+.slot.add i{font-style:normal;font-size:22px;color:#4d6079}
+.slot.ghost{opacity:.25}
+.slot.drag{position:fixed;z-index:120;margin:0;pointer-events:none;transform:scale(1.12) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5);border-color:#ff8a4c}
+.slot.pop{animation:slotPop .65s cubic-bezier(.2,1.4,.4,1)}
+.slot.pop::after{content:"";position:absolute;inset:-2px;border-radius:12px;border:2px solid #ff8a4c;animation:slotRing .7s ease-out forwards;pointer-events:none}
+.spk{position:fixed;width:7px;height:7px;border-radius:50%;z-index:130;pointer-events:none}
+.strip.pull{outline:2px dashed var(--acc);outline-offset:6px;border-radius:16px}
+.player.enter{animation:cardIn .5s ease-out}
+@keyframes invPulse{50%{box-shadow:0 0 0 3px rgba(255,138,76,.25)}}
+@keyframes invGulp{0%{transform:scale(1)}30%{transform:scale(1.03,.97)}60%{transform:scale(.99,1.02)}100%{transform:none}}
+@keyframes slotPop{0%{transform:scale(.2) rotate(-25deg);opacity:0}60%{transform:scale(1.2) rotate(4deg);opacity:1}100%{transform:none}}
+@keyframes slotRing{from{transform:scale(1);opacity:1}to{transform:scale(1.7);opacity:0}}
+@keyframes cardIn{from{opacity:0;transform:translateY(-14px) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.inv.armed,.inv.gulp,.slot.pop,.slot.pop::after,.player.enter{animation:none}}
+
+/* registro de canastas */
+.tabs{gap:3px}.tabs button{font-size:clamp(10px,calc(11.25px + (100vw - 400px)*.0375),12.5px);padding:11px 1px}
+@media (max-width:364px){.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;overflow:visible}.tabs button{font-size:13px;padding:10px 4px}}
+.lgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}
+.lgs div{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center}
+.lgs small{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--mut)}
+.lgs b{display:block;font-size:24px;line-height:1.2;font-weight:800}
+.lgs .tt{background:var(--hd);border-color:var(--hd);color:#fff}
+.lgs .tt small{color:#c9d3df}.lgs .tt b{color:#fff}
+.lg{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.le{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 12px;animation:popIn .35s ease-out both}
+.lp{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px}
+.lp.p1{background:#475569}.lp.p2{background:#1f4e79}.lp.p3{background:#c2410c}
+.lw{flex:1;min-width:0}
+.lname{font-size:17px;font-weight:800;overflow-wrap:anywhere}
+.ln{display:inline-block;background:var(--row);border:1.5px solid var(--line);border-radius:7px;padding:0 6px;margin-right:6px;font-size:13px;font-weight:800;color:var(--mut)}
+.lk{font-size:14px;color:var(--mut)}
+.lr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.lq{font-size:12px;font-weight:800;background:var(--acc2);color:var(--on);border-radius:8px;padding:1px 7px}
+.lr small{font-size:11px;color:var(--mut)}
+.tmpl{display:grid;gap:8px;margin:8px 0 14px}
+.tmp{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--line);padding:12px;text-align:left;font-weight:700;width:100%}
+.tmp.on{border-color:var(--acc2);background:color-mix(in srgb,var(--acc2) 14%,var(--card))}
+.tmp i{flex:none;width:24px;height:24px;border:2px solid var(--line);border-radius:6px;display:grid;place-items:center;font-style:normal;font-size:15px}
+.tmp.on i{background:var(--acc2);color:var(--on);border-color:var(--acc2)}
+.tb button.add{border-style:dashed;color:var(--acc2)}
+th:first-child{background:var(--hd)}
 </style>
 </head>
 <body>
 <h1>Básquet: estadísticas</h1>
 <div class="tabs" id="tabs">
   <button data-tab="game">Partido</button>
+  <button data-tab="log">Canastas</button>
   <button data-tab="avg">Promedios</button>
   <button data-tab="hist">Historial</button>
   <button data-tab="board">Tablero</button>
+  <button data-tab="teams">Equipos</button>
   <button data-tab="notes">Notas</button>
 </div>
 <div id="app"></div>
@@ -289,12 +351,13 @@ function vGame(){
   let h=`<div class="row"><input id="rival" placeholder="Rival (opcional)" value="${esc(db.cur.rival)}"><input id="date" type="date" value="${db.cur.date}"></div>
   <div class="row"><input id="nm" placeholder="Nombre (opcional)" maxlength="30" autocomplete="off"><button class="primary" data-act="addp">Agregar jugador</button></div>`;
   if(!db.roster.length)return h+`<div class="empty">Agrega a tus jugadores. Se quedan guardados para todos los partidos.</div>`;
-  const qi=qInfo(),qc=C0();
+  const qi=qInfo(),qc=C0(),vis=db.roster.filter(p=>!qc.inv[p.id]);
+  h+=invHtml();
   h+=qBoard([0,1,2,3].map(i=>i<qc.qp.length?qc.qp[i]:(i===qi.q-1&&!qi.done?qi.live:null)),qi.done?-1:qi.q-1,qi.total,qpop);
-  h+=`<div class="strip" id="strip">${db.roster.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div><p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos.</p>`;
-  h+=db.roster.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}" id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}${posChip(p)}</div><div class="pts">${d(s).pts}<small>puntos</small></div><span class="chev" aria-hidden="true"></span></div></div>${posBar(p)}<div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
+  h+=`<div class="strip" id="strip">${vis.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div>${vis.length?`<p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos o guardarlos en el inventario.</p>`:`<p class="mut" style="margin:0 2px 12px;font-size:13px">Todos tus jugadores están en el inventario. Toca uno para sacarlo.</p>`}`;
+  h+=vis.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}${stripPop===p.id?" enter":""}" id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}${posChip(p)}</div><div class="pts">${d(s).pts}<small>puntos</small></div><span class="chev" aria-hidden="true"></span></div></div>${posBar(p)}<div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
    C.map((c,i)=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" style="--i:${i};${COL[c[0]]?`--c:${COL[c[0]]}`:""}"><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
-   `</div><div class="row" style="margin:10px 0 0"><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div></div></div></div>`}).join("");
+   `</div><div class="row" style="margin:10px 0 0"><button class="ghost sv" data-act="stash" data-id="${p.id}">Guardar en inventario</button><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div></div></div></div>`}).join("");
   return h+`<div class="row"><button class="primary" data-act="end" style="flex:1;padding:15px">Terminar partido y guardar</button></div><div class="row"><button class="qend" data-act="endq"${qi.done?" disabled":""} style="flex:1">${qi.done?"Cuarto 4 terminado":"Terminar cuarto "+qi.q}</button></div><div class="row"><button class="ghost" data-act="delall" style="flex:1;padding:13px;color:#ef4444;border-color:#ef4444">Borrar todos los jugadores</button></div>`}
 
 function agg(){const m={};
@@ -306,7 +369,7 @@ function vAvg(){const l=agg();
   <div class="row"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><input id="file" type="file" accept=".json" hidden></div>`}
 function vHist(){
   if(open){const g=db.games.find(x=>x.id===open);if(g)return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>`+
-   (g.qp?qBoard(g.qp,-1,g.rows.reduce((a,r)=>a+d(r.s).pts,0)):"")+table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
+   (g.qp?qBoard(g.qp,-1,g.rows.reduce((a,r)=>a+d(r.s).pts,0)):"")+table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
   if(!db.games.length)return `<div class="empty">Todavía no hay partidos guardados.</div>`;
   return db.games.slice().reverse().map(g=>`<div class="game"><div><b>${g.rival?"vs "+esc(g.rival):"Partido"}</b><div class="mut">${g.date} · ${g.rows.length} jugadores</div></div><div class="gr">${gstats(g)}<button class="open" data-act="open" data-id="${g.id}">Ver</button></div></div>`).join("")}
 
@@ -316,14 +379,16 @@ function gstats(g){let ok=0,bad=0,pts=0;
     bad+=(s.fal||0)+(s.to||0)+(s.mal||0)});
   return `<div class="gst"><span class="ok"><small>ACIERTOS</small><i>${ok}</i></span><span class="bad"><small>ERRORES</small><i>${bad}</i></span><span><small>PUNTOS</small><i>${pts}</i></span></div>`}
 let openP=null;
-let qpop=-1,tkDrag=null,tzT,benchPop=null;
+let qpop=-1,tkDrag=null,tzT,benchPop=null,invPop=null,stripPop=null;
 const C0=()=>{const c=db.cur;if(!Array.isArray(c.qp))c.qp=[];if(!Array.isArray(c.qf))c.qf=[];if(!c.to||typeof c.to!=="object")c.to={a:2,b:3};
   if(!c.bn||typeof c.bn!=="object")c.bn={};
+  if(!c.inv||typeof c.inv!=="object")c.inv={};
+  if(!Array.isArray(c.log))c.log=[];
   if(!c.fb||typeof c.fb!=="object"){c.fb={};let rem=c.qf.reduce((a,b)=>a+b,0);
     if(rem>0)(db.roster||[]).forEach(p=>{const f=(c.rows&&c.rows[p.id]&&c.rows[p.id].fal)||0,t=Math.min(f,rem);if(t>0)c.fb[p.id]=t;rem-=t})}
   return c};
 function qInfo(){const c=C0();let pts=0,fal=0;
-  db.roster.forEach(p=>{const s=db.cur.rows[p.id];if(!s)return;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);fal+=Math.max(0,(s.fal||0)-(c.fb[p.id]||0))});
+  db.roster.forEach(p=>{const s=db.cur.rows[p.id];if(!s)return;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);if(!c.bn[p.id]&&!c.inv[p.id])fal+=Math.max(0,(s.fal||0)-(c.fb[p.id]||0))});
   const sp=c.qp.reduce((a,b)=>a+b,0),done=c.qp.length>=4;
   return{q:done?4:c.qp.length+1,done,live:done?0:Math.max(0,pts-sp),fouls:done?0:fal,total:pts}}
 const tHalf=()=>qInfo().q<=2?"a":"b";
@@ -399,9 +464,11 @@ function initStrip(){
       const r=D.t.getBoundingClientRect(),c=D.t.cloneNode(true);
       c.classList.add("drag");c.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
       document.body.appendChild(c);D.c=c;D.ox=D.x0-r.left;D.oy=D.y0-r.top;D.on=true;D.t.classList.add("ghost");
+      const iv0=document.getElementById("inv");if(iv0)iv0.classList.add("armed");
       if(navigator.vibrate)navigator.vibrate(12)}
     D.c.style.left=(e.clientX-D.ox)+"px";D.c.style.top=(e.clientY-D.oy)+"px";
-    const over=tiles().find(o=>{if(o===D.t)return false;const r=lay(o);return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom});
+    {const iv=document.getElementById("inv");if(iv){const q=iv.getBoundingClientRect();D.inside=e.clientX>=q.left&&e.clientX<=q.right&&e.clientY>=q.top&&e.clientY<=q.bottom;iv.classList.toggle("hot",D.inside)}}
+    const over=D.inside?null:tiles().find(o=>{if(o===D.t)return false;const r=lay(o);return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom});
     if(over){const after=!!(D.t.compareDocumentPosition(over)&Node.DOCUMENT_POSITION_FOLLOWING);flip(()=>after?over.after(D.t):over.before(D.t))}});
   const end=e=>{
     if(!D||e.pointerId!==D.pid)return;
@@ -410,11 +477,13 @@ function initStrip(){
     if(!on){
       if(e.type==="pointerup"){const id=t.dataset.id,was=openP===id;setOpen(id);goDown(id,was?60:430)}
       return}
+    const iv=document.getElementById("inv");if(iv)iv.classList.remove("armed","hot");
+    if(iv&&e.type==="pointerup"){const q=iv.getBoundingClientRect();if(e.clientX>=q.left&&e.clientX<=q.right&&e.clientY>=q.top&&e.clientY<=q.bottom){stash(t.dataset.id,c,t);return}}
     const r=t.getBoundingClientRect();
     c.style.transition="left .14s ease-out,top .14s ease-out,transform .14s ease-out";
     c.style.left=r.left+"px";c.style.top=r.top+"px";c.style.transform="none";
     setTimeout(()=>{c.remove();t.classList.remove("ghost");
-      db.roster=tiles().map(x=>db.roster.find(p=>p.id===x.dataset.id));save();render()},150)};
+      {const iv=C0().inv,ord=tiles().map(x=>x.dataset.id);let k=0;db.roster=db.roster.map(p=>{if(iv[p.id])return p;const id=ord[k++];return db.roster.find(q=>q.id===id)})}save();render()},150)};
   strip.addEventListener("pointerup",end);strip.addEventListener("pointercancel",end)}
 function updScore(){
   let pts=0,ok=0,bad=0;
@@ -517,10 +586,79 @@ async function saveTxt(name,text){
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.style.display="none";
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
   toast("info","Archivo guardado","Búscalo en las descargas de tu dispositivo: "+name)}
+const invHtml=()=>{const c=C0(),ids=db.roster.filter(p=>c.inv[p.id]).sort((a,b)=>c.inv[a.id]-c.inv[b.id]),n=ids.length;
+  const slots=ids.map(p=>{const s=db.cur.rows[p.id]||{},pts=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);
+    return `<div class="slot${invPop===p.id?" pop":""}" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(plabel(p))}, en el inventario con ${pts} puntos. Toca para sacarlo"><b>${esc(numOf(p))}</b><span>${p.name?esc(p.name):"&nbsp;"}</span><em>${pts} pts</em></div>`}).join("");
+  return `<div class="inv${invPop?" gulp":""}" id="inv" role="region" aria-label="Inventario de jugadores"><div class="invh"><b>INVENTARIO</b><span>${n?n+(n>1?" guardados":" guardado"):"vacío"}</span><em class="h1">arrastra un cuadro aquí</em><em class="h2">¡suéltalo aquí!</em></div><div class="invs">${slots}<div class="slot add" aria-hidden="true"><i>+</i></div></div></div>`};
+const RMO=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
+function burst(el){if(RMO())return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,cols=["#ff8a4c","#f5b700","#6fb1ea","#ffffff"];
+  for(let i=0;i<12;i++){const d=document.createElement("i");d.className="spk";d.style.cssText=`left:${cx}px;top:${cy}px;background:${cols[i%4]}`;document.body.appendChild(d);
+    const a=i/12*Math.PI*2,dist=36+Math.random()*26;
+    d.animate([{transform:"translate(-50%,-50%) scale(1)",opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*dist}px),calc(-50% + ${Math.sin(a)*dist}px)) scale(.2)`,opacity:0}],{duration:520+Math.random()*200,easing:"cubic-bezier(.2,.8,.3,1)"}).onfinish=()=>d.remove()}}
+function stash(id,c,t){
+  const inv=document.getElementById("inv"),add=inv&&inv.querySelector(".slot.add");
+  const done=()=>{c.remove();C0().inv[id]=Date.now();if(openP===id)openP=null;invPop=id;save();render();invPop=null;
+    const sl=document.querySelector(`#inv .slot[data-id="${id}"]`);if(sl)burst(sl);try{navigator.vibrate&&navigator.vibrate([20,30,20])}catch(e){}};
+  if(RMO()||!add){done();return}
+  const a=c.getBoundingClientRect(),b=add.getBoundingClientRect(),dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2);
+  const card=document.getElementById("pc"+id);
+  if(card){const h=card.offsetHeight;card.style.overflow="hidden";
+    card.animate([{height:h+"px",opacity:1},{height:"0px",opacity:0,marginTop:"0px",marginBottom:"0px",paddingTop:"0px",paddingBottom:"0px",borderTopWidth:"0px",borderBottomWidth:"0px"}],{duration:420,easing:"ease-in-out",fill:"forwards"})}
+  t.animate([{width:t.offsetWidth+"px",opacity:.25},{width:"0px",opacity:0,marginRight:"-10px",borderLeftWidth:"0px",borderRightWidth:"0px"}],{duration:380,easing:"ease-in-out",fill:"forwards"});
+  c.animate([{transform:"scale(1.12) rotate(-3deg)"},{transform:`translate(${dx*.6}px,${dy*.6-26}px) scale(.95) rotate(8deg)`,offset:.55},{transform:`translate(${dx}px,${dy}px) scale(.34) rotate(0deg)`,opacity:.15}],{duration:460,easing:"cubic-bezier(.45,.05,.3,1)",fill:"forwards"}).onfinish=done;
+  setTimeout(()=>{inv.classList.add("gulp")},330)}
+function takeOut(id,from){
+  delete C0().inv[id];save();stripPop=id;render();stripPop=null;
+  const t=document.querySelector(`#strip .tile[data-id="${id}"]`);
+  if(RMO()||!t||!from)return;
+  const r=t.getBoundingClientRect(),f=t.cloneNode(true);t.style.visibility="hidden";
+  f.classList.add("drag");f.style.cssText=`left:${from.left}px;top:${from.top}px;width:${from.width}px;height:${from.height}px`;document.body.appendChild(f);
+  const dx=r.left+r.width/2-(from.left+from.width/2),dy=r.top+r.height/2-(from.top+from.height/2);
+  f.animate([{transform:"scale(1.12) rotate(-3deg)"},{transform:`translate(${dx*.55}px,${dy*.55-30}px) scale(1.18) rotate(5deg)`,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(1) rotate(0deg)`}],{duration:460,easing:"cubic-bezier(.3,.1,.3,1)",fill:"forwards"}).onfinish=()=>{
+    f.remove();t.style.visibility="";t.animate([{transform:"scale(.85)"},{transform:"scale(1.15)",offset:.5},{transform:"none"}],{duration:300,easing:"ease-out"});burst(t)}}
+function initInv(){
+  const inv=document.getElementById("inv");if(!inv)return;
+  let D=null;
+  inv.addEventListener("contextmenu",e=>e.preventDefault());
+  inv.addEventListener("pointerdown",e=>{const t=e.target.closest(".slot[data-id]");if(!t||(e.pointerType==="mouse"&&e.button!==0))return;
+    D={t,pid:e.pointerId,x0:e.clientX,y0:e.clientY,on:false};inv.setPointerCapture(e.pointerId)});
+  inv.addEventListener("pointermove",e=>{if(!D||e.pointerId!==D.pid)return;
+    if(!D.on){if(Math.hypot(e.clientX-D.x0,e.clientY-D.y0)<8)return;
+      const r=D.t.getBoundingClientRect(),c=D.t.cloneNode(true);c.classList.add("drag");c.classList.remove("pop");
+      c.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;document.body.appendChild(c);
+      D.c=c;D.ox=D.x0-r.left;D.oy=D.y0-r.top;D.on=true;D.t.classList.add("ghost");
+      const s=document.getElementById("strip");if(s)s.classList.add("pull");try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}}
+    D.c.style.left=(e.clientX-D.ox)+"px";D.c.style.top=(e.clientY-D.oy)+"px"});
+  const end=e=>{if(!D||e.pointerId!==D.pid)return;const{t,c,on}=D;D=null;
+    try{inv.releasePointerCapture(e.pointerId)}catch(x){}
+    const s=document.getElementById("strip");if(s)s.classList.remove("pull");
+    const id=t.dataset.id;
+    if(!on){if(e.type==="pointerup")takeOut(id,t.getBoundingClientRect());return}
+    const from=c.getBoundingClientRect(),q=inv.getBoundingClientRect();
+    const inside=e.type!=="pointerup"||(e.clientX>=q.left&&e.clientX<=q.right&&e.clientY>=q.top&&e.clientY<=q.bottom);
+    if(!inside){c.remove();takeOut(id,from);return}
+    const r=t.getBoundingClientRect();c.style.transition="left .14s ease-out,top .14s ease-out,transform .14s ease-out";
+    c.style.left=r.left+"px";c.style.top=r.top+"px";c.style.transform="none";
+    setTimeout(()=>{c.remove();t.classList.remove("ghost")},150)};
+  inv.addEventListener("pointerup",end);inv.addEventListener("pointercancel",end);
+  inv.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const t=e.target.closest(".slot[data-id]");if(!t)return;e.preventDefault();takeOut(t.dataset.id,t.getBoundingClientRect())})}
+const PTN={1:"Tiro de 1 punto",2:"Tiro de 2 puntos",3:"Tiro de 3 puntos"};
+function logList(list,live){
+  return `<div class="lg">${list.slice().reverse().map(e=>{const p=live?db.roster.find(x=>x.id===e.pid):null,nm=p?p.name:e.name,nu=p?p.num:e.num;
+    const who=((nu!=null&&nu!=="")?`<span class="ln">#${esc(String(nu))}</span>`:"")+esc(nm||"Jugador");
+    const hm=new Date(e.t).toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"});
+    return `<div class="le"><div class="lp p${e.pts}" aria-hidden="true">+${e.pts}</div><div class="lw"><div class="lname">${who}</div><div class="lk">${PTN[e.pts]}</div></div><div class="lr"><span class="lq">C${e.q||1}</span><small>${hm}</small></div></div>`}).join("")}</div>`}
+function logSum(list){const n={1:0,2:0,3:0};list.forEach(e=>{n[e.pts]++});
+  return `<div class="lgs"><div><small>1 PUNTO</small><b>${n[1]}</b></div><div><small>2 PUNTOS</small><b>${n[2]}</b></div><div><small>3 PUNTOS</small><b>${n[3]}</b></div><div class="tt"><small>PUNTOS</small><b>${n[1]+2*n[2]+3*n[3]}</b></div></div>`}
+const logBlock=(list,live)=>`<h3 class="nh" style="margin:16px 0 10px">Registro de canastas (${list.length})</h3>`+logSum(list)+logList(list,live);
+function vLog(){const c=C0(),qi=qInfo(),lp=c.log.reduce((a,e)=>a+e.pts,0);
+  const old=qi.total>lp?`<p class="mut">Hay ${qi.total-lp} puntos de antes de activar el registro que no aparecen aquí.</p>`:"";
+  if(!c.log.length)return `<h3 class="nh" style="margin:0 0 10px">Registro de canastas (0)</h3><div class="empty">Aún no hay canastas. Cuando sumes 1, 2 o 3 puntos a un jugador aparecen aquí con su nombre.</div>${old}`;
+  return `<h3 class="nh" style="margin:0 0 10px">Registro de canastas (${c.log.length})</h3>`+logSum(c.log)+logList(c.log,true)+old}
 function render(){
   ensureNotes();
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
-  document.getElementById("app").innerHTML=tab==="game"?vGame():tab==="avg"?vAvg():tab==="board"?vBoard():tab==="notes"?vNotes():vHist();if(tab==="board")bInit();if(tab==="game")initStrip();updScore();updLeft()}
+  document.getElementById("app").innerHTML=tab==="game"?vGame():tab==="avg"?vAvg():tab==="board"?vBoard():tab==="notes"?vNotes():tab==="teams"?vTeams():tab==="log"?vLog():vHist();if(tab==="board")bInit();if(tab==="game"){initStrip();initInv()}updScore();updLeft()}
 
 document.getElementById("tabs").onclick=e=>{const b=e.target.closest("button");if(b){tab=b.dataset.tab;open=null;render()}};
 document.addEventListener("input",e=>{if(e.target.id==="nt"){db.nd=e.target.value;e.target.classList.remove("err");save()}if(e.target.id==="rival"){db.cur.rival=e.target.value;save()}if(e.target.id==="date"){db.cur.date=e.target.value;save()}});
@@ -529,6 +667,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelect
 document.addEventListener("change",e=>{if(e.target.id==="file"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{try{const n=JSON.parse(r.result);if(n.roster&&n.games){db=n;save();render();note("Respaldo cargado.")}}catch(x){note("El archivo no es válido.")}};r.readAsText(e.target.files[0])}});
 document.addEventListener("click",e=>{if(!e.target.closest(".posbar,.posb"))document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));const b=e.target.closest("[data-act]");if(b)act(b.dataset.act,b.dataset)});
 function act(a,s){
+  if(a.startsWith("tm"))return tmAct(a,s);
   if(a==="posopen"){const bar=document.querySelector("#pc"+s.id+" .posbar");if(!bar)return;const was=bar.classList.contains("show");
     document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));
     if(!was){const hd=bar.parentElement.querySelector(".head");bar.style.top=(hd.offsetTop+hd.offsetHeight+4)+"px";bar.classList.add("show")}return}
@@ -555,21 +694,29 @@ function act(a,s){
   else if(a==="tgl"){setOpen(openP===s.id?null:s.id)}
   else if(a==="editnum"){const p=db.roster.find(x=>x.id===s.id);if(!p)return;
     askNum({title:`Número de ${p.name?esc(p.name):"este jugador"}`,okText:"Guardar",num:p.num,editId:p.id,onOk:num=>{p.num=num;save();render()}})}
-  else if(a==="n"){const r=row(s.id),fb=qInfo().fouls;r[s.k]=Math.max(0,(r[s.k]||0)+Number(s.d));save();render();goUp();if(s.k==="fal"){const f1=qInfo().fouls;if(fb<4&&f1>=4)bonusToast(f1)}}
+  else if(a==="n"){const r=row(s.id),fb=qInfo().fouls,b0=r[s.k]||0;r[s.k]=Math.max(0,b0+Number(s.d));
+    if(/^m[123]$/.test(s.k)){const dd=(r[s.k]||0)-b0,c=C0(),pt=Number(s.k[1]);
+      if(dd>0){const p=db.roster.find(x=>x.id===s.id)||{};c.log.push({id:"c"+Date.now()+Math.random().toString(36).slice(2,6),pid:s.id,name:p.name||"",num:p.num,pts:pt,q:qInfo().q,t:Date.now()})}
+      else if(dd<0){const i=c.log.map(e=>e.pid===s.id&&e.pts===pt).lastIndexOf(true);if(i>=0)c.log.splice(i,1)}}
+    save();render();goUp();if(s.k==="fal"){const f1=qInfo().fouls;if(fb<4&&f1>=4)bonusToast(f1)}}
+  else if(a==="stash"){const go=()=>{const t=document.querySelector(`#strip .tile[data-id="${s.id}"]`);if(!t)return;
+      const r=t.getBoundingClientRect(),c=t.cloneNode(true);c.classList.add("drag");c.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;document.body.appendChild(c);stash(s.id,c,t)};
+    const iv=document.getElementById("inv"),q=iv&&iv.getBoundingClientRect();
+    if(q&&(q.top<0||q.bottom>innerHeight)){window.scrollTo({top:Math.max(0,q.top+scrollY-90),behavior:"smooth"});setTimeout(go,550)}else go()}
   else if(a==="bench"){const c=C0(),f0=qInfo().fouls;if(c.bn[s.id])delete c.bn[s.id];else c.bn[s.id]=1;
     benchPop=s.id;save();render();benchPop=null;goUp();const f1=qInfo().fouls;if(f0<4&&f1>=4)bonusToast(f1)}
-  else if(a==="delp"){const p=db.roster.find(x=>x.id===s.id);ask("¿Quitar a "+esc(plabel(p))+"? Sus partidos guardados no se borran.",()=>{db.roster=db.roster.filter(x=>x.id!==s.id);delete db.cur.rows[s.id];delete C0().bn[s.id];delete db.cur.fb[s.id];save();render()})}
+  else if(a==="delp"){const p=db.roster.find(x=>x.id===s.id);ask("¿Quitar a "+esc(plabel(p))+"? Sus partidos guardados no se borran.",()=>{db.roster=db.roster.filter(x=>x.id!==s.id);delete db.cur.rows[s.id];delete C0().bn[s.id];delete db.cur.fb[s.id];delete db.cur.inv[s.id];C0().log=C0().log.filter(e=>e.pid!==s.id);save();render()})}
   else if(a==="end"){
     const rows=db.roster.map(p=>({id:p.id,name:p.name,num:p.num,s:row(p.id)})).filter(r=>Object.values(r.s).some(v=>v>0));
     if(!rows.length){note("Todavía no hay estadísticas que guardar.");return}
-    ask("¿Terminar el partido y guardarlo?",()=>{const qz=qInfo(),g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};if(db.cur.qp.length){g.qp=db.cur.qp.slice();if(!qz.done)g.qp.push(qz.live)}
+    ask("¿Terminar el partido y guardarlo?",()=>{const qz=qInfo(),g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};if(db.cur.qp.length){g.qp=db.cur.qp.slice();if(!qz.done)g.qp.push(qz.live)}if(db.cur.log.length)g.log=db.cur.log.slice();
     db.games.push(g);db.cur={rival:"",date:today(),rows:{}};C0();save();open=g.id;tab="hist";render()})}
   else if(a==="endq"){const q0=qInfo();if(q0.done)return;
     ask(`¿Seguro que quieres terminar el cuarto ${q0.q}? Se guardan sus ${q0.live} puntos.`,()=>{const z=qInfo(),c=C0();if(z.done)return;
       db.roster.forEach(p=>{c.fb[p.id]=(db.cur.rows[p.id]&&db.cur.rows[p.id].fal)||0});c.qp.push(z.live);c.qf.push(z.fouls);qpop=z.q-1;save();render();qpop=-1;
       if(z.q===2)toast("info","Segunda mitad","Ahora tienes 3 tiempos fuera.");
       else if(z.q===4)toast("info","Cuarto 4 terminado","Ya puedes terminar el partido y guardarlo.")},{no:"No",si:"Sí"})}
-  else if(a==="delall"){ask("¿Borrar a TODOS los jugadores? Se borran también las estadísticas y los cuartos de este partido. Los partidos ya guardados no se borran.",()=>{db.roster=[];db.cur.rows={};db.cur.qp=[];db.cur.qf=[];db.cur.to={a:2,b:3};db.cur.bn={};db.cur.fb={};save();render()})}
+  else if(a==="delall"){ask("¿Borrar a TODOS los jugadores? Se borran también las estadísticas y los cuartos de este partido. Los partidos ya guardados no se borran.",()=>{db.roster=[];db.cur.rows={};db.cur.qp=[];db.cur.qf=[];db.cur.to={a:2,b:3};db.cur.bn={};db.cur.fb={};db.cur.inv={};db.cur.log=[];save();render()})}
   else if(a==="open"){open=Number(s.id);render()}
   else if(a==="back"){open=null;render()}
   else if(a==="delg"){ask("¿Borrar este partido? Los promedios se recalculan.",()=>{db.games=db.games.filter(x=>x.id!==Number(s.id));open=null;save();render()})}
@@ -756,6 +903,64 @@ async function bPlay(){
   }
   bplay=false;bd.cur=bd.steps.length-1;if(tab==="board")bRefresh()}
 /* ===== fin Tablero ===== */
+/* ===== Equipos ===== */
+let tmSel=null,tmPl=null,tmForm=null;
+const TMS=()=>db.teams||(db.teams=[]);
+function tmAll(){const m={};db.roster.forEach(p=>m[p.id]={id:p.id,name:p.name,num:p.num});
+  db.games.forEach(g=>g.rows.forEach(r=>{if(!m[r.id])m[r.id]={id:r.id,name:r.name,num:r.num}}));
+  return Object.values(m)}
+const tmGameName=g=>g.date+(g.rival?" · vs "+g.rival:"");
+function vTeams(){
+  const T=TMS(),all=tmAll(),pl=id=>all.find(p=>p.id===id);
+  if(tmForm){const f=tmForm;
+    return `<h2 style="margin-top:4px">${f.id?"Editar equipo":"Nuevo equipo"}</h2>
+    <div class="row"><input id="tmname" placeholder="Nombre del equipo" maxlength="40" autocomplete="off" value="${esc(f.name)}"></div>
+    <p class="mut" style="margin:6px 0 0">Elige los jugadores que van en este equipo (${f.pids.length} elegidos).</p>
+    ${all.length?`<div class="tmpl">${all.map(p=>{const on=f.pids.includes(p.id);return `<button class="tmp${on?" on":""}" data-act="tmtog" data-id="${p.id}" aria-pressed="${on}"><i aria-hidden="true">${on?"✓":""}</i>${esc(plabel(p))}</button>`}).join("")}</div>`
+    :`<div class="empty">Todavía no hay jugadores. Agrégalos en la pestaña Partido y vuelve aquí.</div>`}
+    <div class="row"><button class="ghost" data-act="tmcancel">Cancelar</button><button class="primary" data-act="tmsave" style="flex:1">Guardar equipo</button></div>`}
+  if(!T.length)return `<div class="empty">Aún no tienes equipos. Crea uno, ponle nombre y elige a sus jugadores para ver sus estadísticas y promedios.</div><div class="row"><button class="primary" data-act="tmnew" style="flex:1;padding:15px">Crear equipo</button></div>`;
+  let t=T.find(x=>x.id===tmSel);if(!t){t=T[0];tmSel=t.id}
+  const pids=t.pids.filter(id=>pl(id)),mine=pids.map(pl);
+  if(tmPl&&!pids.includes(tmPl))tmPl=null;
+  let h=`<div class="tb" role="group" aria-label="Equipos">${T.map(x=>`<button class="${x.id===t.id?"on":""}" data-act="tmpick" data-id="${x.id}">${esc(x.name)}</button>`).join("")}<button class="add" data-act="tmnew">+ Nuevo equipo</button></div>
+  <div class="row" style="align-items:center;margin-top:6px"><h2 style="margin:0;flex:1">${esc(t.name)}</h2><button class="ghost" data-act="tmedit">Editar</button><button class="ghost" data-act="tmdel">Eliminar</button></div>
+  <div class="tb" role="group" aria-label="Ver estadísticas de"><button class="${!tmPl?"on":""}" data-act="tmpl" data-id="">Todo el equipo</button>${mine.map(p=>`<button class="${tmPl===p.id?"on":""}" data-act="tmpl" data-id="${p.id}">${esc(plabel(p))}</button>`).join("")}</div>`;
+  if(!mine.length)return h+`<div class="empty">Este equipo no tiene jugadores. Toca Editar para agregarlos.</div>`;
+  if(tmPl){const p=pl(tmPl),gs=db.games.map(g=>({g,r:g.rows.find(r=>r.id===tmPl)})).filter(x=>x.r);
+    if(!gs.length)return h+`<div class="empty">${esc(plabel(p))} aún no tiene partidos guardados.</div>`;
+    const tot=gs.reduce((a,x)=>add(a,x.r.s),zero());
+    return h+`<h3 class="nh" style="margin:14px 0 8px">Promedio por partido</h3>`+table([{name:plabel(p),t:tot,g:gs.length}],true)
+      +`<h3 class="nh" style="margin:16px 0 8px">Historial por partido (${gs.length})</h3>`+table(gs.slice().reverse().map(x=>({name:tmGameName(x.g),t:x.r.s})),false).replace("<th>Jugador</th>","<th>Partido</th>")}
+  const gs=db.games.map(g=>({g,rows:g.rows.filter(r=>pids.includes(r.id))})).filter(x=>x.rows.length);
+  if(!gs.length)return h+`<div class="empty">Los jugadores de este equipo aún no tienen partidos guardados. Termina un partido para ver aquí las estadísticas.</div>`;
+  const m={};gs.forEach(x=>x.rows.forEach(r=>{const o=m[r.id]||(m[r.id]={name:plabel(r),t:zero(),g:0});o.t=add(o.t,r.s);o.g++}));
+  const list=Object.values(m).sort((a,b)=>d(b.t).pts/b.g-d(a.t).pts/a.g);
+  const gp=gs.map(x=>x.rows.reduce((a,r)=>a+d(r.s).pts,0)),sum=gp.reduce((a,b)=>a+b,0);
+  h+=`<div class="lgs" style="margin-top:12px"><div><small>PARTIDOS</small><b>${gs.length}</b></div><div><small>PUNTOS</small><b>${sum}</b></div><div><small>POR PARTIDO</small><b>${(sum/gs.length).toFixed(1)}</b></div><div class="tt"><small>JUGADORES</small><b>${mine.length}</b></div></div>`;
+  h+=`<h3 class="nh" style="margin:16px 0 8px">Promedio por partido</h3>`+table(list,true)+`<h3 class="nh" style="margin:16px 0 8px">Totales</h3>`+table(list,false,true);
+  h+=`<h3 class="nh" style="margin:16px 0 8px">Partidos (${gs.length})</h3>`+gs.slice().reverse().map((x,i)=>`<div class="game"><div><b>${x.g.rival?"vs "+esc(x.g.rival):"Partido"}</b><div class="mut">${x.g.date} · ${x.rows.length} jugadores</div></div><div class="gr"><div class="gst"><span><small>PUNTOS</small><i>${gp[gs.length-1-i]}</i></span></div></div></div>`).join("");
+  return h}
+function tmAct(a,s){
+  const T=TMS();
+  if(a==="tmnew"){tmForm={id:null,name:"",pids:[]}}
+  else if(a==="tmedit"){const t=T.find(x=>x.id===tmSel);if(!t)return;tmForm={id:t.id,name:t.name,pids:t.pids.slice()}}
+  else if(a==="tmtog"){const i=tmForm.pids.indexOf(s.id);i<0?tmForm.pids.push(s.id):tmForm.pids.splice(i,1)}
+  else if(a==="tmcancel"){tmForm=null}
+  else if(a==="tmsave"){const nm=tmForm.name.trim();
+    if(!nm){toast("info","Falta el nombre","Escribe cómo se llama el equipo");const i=document.getElementById("tmname");if(i)i.focus();return}
+    if(!tmForm.pids.length){toast("info","Faltan jugadores","Elige al menos un jugador");return}
+    if(tmForm.id){const t=T.find(x=>x.id===tmForm.id);t.name=nm;t.pids=tmForm.pids}
+    else{const t={id:"t"+Date.now(),name:nm,pids:tmForm.pids};T.push(t);tmSel=t.id}
+    tmPl=null;tmForm=null;save();toast("info","Equipo guardado",nm)}
+  else if(a==="tmpick"){tmSel=s.id;tmPl=null}
+  else if(a==="tmpl"){tmPl=s.id||null}
+  else if(a==="tmdel"){const t=T.find(x=>x.id===tmSel);if(!t)return;
+    ask("¿Eliminar el equipo "+esc(t.name)+"? Los jugadores y sus partidos no se borran.",()=>{db.teams=T.filter(x=>x.id!==t.id);tmSel=null;tmPl=null;save();render()},{si:"Eliminar"});return}
+  render()}
+document.addEventListener("input",e=>{if(e.target.id==="tmname"&&tmForm)tmForm.name=e.target.value});
+/* ===== fin Equipos ===== */
+
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
