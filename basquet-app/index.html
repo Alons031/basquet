@@ -456,6 +456,11 @@ th:first-child{background:var(--hd)}
   .chev{margin:0 2px 0 0}
 }
 #score .sb.sw{padding:0}
+@media (max-width:600px),(max-height:500px){
+  body:not([data-tab="game"]) #score,body:not([data-tab="game"]) #lt{display:none}
+  body:not([data-tab="game"]){padding-bottom:24px}
+}
+@media (max-height:500px){h1{font-size:20px;margin:0 0 8px}}
 </style>
 </head>
 <body>
@@ -909,7 +914,7 @@ function loadFx(fx){
   setTimeout(()=>{const st=document.getElementById("strip");if(st){const r=st.getBoundingClientRect();confettiAt(r.left+r.width/2,r.top+Math.min(r.height,80)/2,24)}},Math.max(300,done));
   if(fx.away.length)setTimeout(()=>{const iv=document.getElementById("inv");if(iv)iv.querySelectorAll(".slot[data-id]").forEach((sl,k)=>{if(fx.away.includes(sl.dataset.id))setTimeout(()=>burst(sl),k*80)})},300)}
 function render(){
-  ensureNotes();
+  ensureNotes();document.body.dataset.tab=tab;
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
   document.getElementById("app").innerHTML=tab==="game"?vGame():tab==="avg"?vAvg():tab==="board"?vBoard():tab==="notes"?vNotes():tab==="teams"?vTeams():tab==="log"?vLog():vHist();if(tab==="board")bInit();if(tab==="game"){initStrip();initInv()}updScore();updLeft()}
 
