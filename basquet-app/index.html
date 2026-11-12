@@ -632,6 +632,16 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 .ct{border-color:color-mix(in srgb,var(--cc) 60%,transparent);background:color-mix(in srgb,var(--cc) 8%,var(--row))}
 .ct.on{background:var(--cc);border-color:var(--cc);color:var(--cx)}
 [data-act="tmsave"]{background:#4fa872;color:#fff;border:0}
+
+
+/* ===== Cuadros de jugadores (Partido) ===== */
+.tile{--pc:#4a9cce;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 24%,var(--card)),color-mix(in srgb,var(--pc) 9%,var(--card)));border:2px solid color-mix(in srgb,var(--pc) 50%,var(--line));color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.18),inset 0 -5px 0 var(--pc)}
+.tile b{color:var(--ink)}
+.tile span{color:var(--mut);margin-bottom:4px}
+.tile.bn{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--pc) 14%,var(--card)) 0 7px,color-mix(in srgb,var(--pc) 5%,var(--card)) 7px 14px);border:2px dashed color-mix(in srgb,var(--pc) 60%,var(--mut));box-shadow:none;opacity:.85}
+.tile.bn b{color:var(--ink)}.tile.bn span{color:var(--mut)}
+.tile .tbi{color:var(--pc)}
+.numb{--pc:#4a9cce;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 24%,var(--card)),color-mix(in srgb,var(--pc) 9%,var(--card)));color:var(--ink);border:2px solid color-mix(in srgb,var(--pc) 50%,var(--line));box-shadow:inset 0 -4px 0 var(--pc)}
 </style>
 </head>
 <body>
@@ -801,8 +811,8 @@ function vGame(){
   const qi=qInfo(),qc=C0(),vis=db.roster.filter(p=>!qc.inv[p.id]);
   h+=invHtml();
   h+=qBoard([0,1,2,3].map(i=>i<qc.qp.length?qc.qp[i]:(i===qi.q-1&&!qi.done?qi.live:null)),qi.done?-1:qi.q-1,qi.total,qpop);
-  h+=`<div class="strip" id="strip">${vis.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div>${vis.length?`<p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos o guardarlos en el inventario.</p>`:`<p class="mut" style="margin:0 2px 12px;font-size:13px">Todos tus jugadores están en el inventario. Toca uno para sacarlo.</p>`}`;
-  h+=vis.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}${stripPop===p.id||(teamPop&&teamPop.has(p.id))?" enter":""}"${teamPop&&teamPop.has(p.id)?` style="animation-delay:${teamPop.get(p.id)*110+250}ms;animation-fill-mode:both"`:""} id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}${posChip(p)}</div><div class="pts">${d(s).pts}<small>puntos</small></div>${missW(p,s)}<span class="chev" aria-hidden="true"></span></div></div>${posBar(p)}<div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
+  h+=`<div class="strip" id="strip">${vis.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}" style="--pc:${pcol(p)}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div>${vis.length?`<p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos o guardarlos en el inventario.</p>`:`<p class="mut" style="margin:0 2px 12px;font-size:13px">Todos tus jugadores están en el inventario. Toca uno para sacarlo.</p>`}`;
+  h+=vis.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}${stripPop===p.id||(teamPop&&teamPop.has(p.id))?" enter":""}"${teamPop&&teamPop.has(p.id)?` style="animation-delay:${teamPop.get(p.id)*110+250}ms;animation-fill-mode:both"`:""} id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" style="--pc:${pcol(p)}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}${posChip(p)}</div><div class="pts">${d(s).pts}<small>puntos</small></div>${missW(p,s)}<span class="chev" aria-hidden="true"></span></div></div>${posBar(p)}<div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
    C.map((c,i)=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" style="--i:${i};${COL[c[0]]?`--c:${COL[c[0]]}`:""}"><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
    `</div><div class="row" style="margin:10px 0 0"><button class="ghost sv" data-act="stash" data-id="${p.id}">Guardar en inventario</button><button class="ghost" data-act="delp" data-id="${p.id}">Quitar jugador</button></div></div></div></div></div>`}).join("");
   return h+`<div class="row"><button class="primary" data-act="end" style="flex:1;padding:15px">Terminar partido y guardar</button></div><div class="row"><button class="qend" data-act="endq"${qi.done?" disabled":""} style="flex:1">${qi.done?"Cuarto 4 terminado":"Terminar cuarto "+qi.q}</button></div><div class="row"><button class="ghost" data-act="delall" style="flex:1;padding:13px;color:#ef4444;border-color:#ef4444">Borrar todos los jugadores</button></div>`}
@@ -876,6 +886,7 @@ function setOpen(id){
     c.classList.toggle("open",on);
     const hit=c.querySelector(".hit");if(hit)hit.setAttribute("aria-expanded",on);
     const pin=c.querySelector(".pin");if(pin)pin.toggleAttribute("inert",!on)})}
+const PCOL=["#d9674f","#e0963f","#4fa872","#3fa89d","#4a9cce","#8570cc","#b863bd","#c9588f"],pcol=p=>PCOL[Math.max(0,db.roster.findIndex(x=>x.id===p.id))%PCOL.length];
 const numOf=p=>(p.num!=null&&p.num!=="")?String(p.num):"–";
 const plabel=p=>{const n=(p.num!=null&&p.num!=="")?"#"+p.num:"";return (n+(p.name?" "+p.name:"")).trim()||"Jugador"};
 function askNum(o){
