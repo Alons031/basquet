@@ -551,11 +551,7 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 .tcard .tcc span{background:var(--row);border:1.5px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700}
 .tcard i{grid-row:1/4;grid-column:2;font-style:normal;font-size:30px;line-height:1;color:var(--acc)}
 .rm{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;border-radius:999px;color:#fff;vertical-align:middle}
-.rm.v{background:#1f6fb4}.rm.f{background:#c2418c}
-.rm.cat{background:transparent;color:inherit;border:1.5px solid var(--acc2);text-transform:none;letter-spacing:.01em;padding:1px 9px}
-.gpt{font-size:14px;margin-top:2px;color:var(--mut)}.gpt b{font-size:18px;color:var(--ink)}
-.rmw{display:inline-flex;flex-wrap:wrap;gap:5px;vertical-align:middle}
-.rm+.rm{margin-left:0}
+.rm.v{background:#1f6fb4}.rm.f{background:#c2418c}.rm.rcat{background:var(--acc);color:#111}
 .stp{margin:16px 0 6px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
 .tmw{border:2px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;transition:border-color .2s}
 .tmw.on{border-color:var(--acc)}
@@ -597,6 +593,45 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 .lps{margin:8px 0}
 .lps button{font-size:13px;padding:9px 4px;line-height:1.15}
 .lpp{white-space:pre-wrap;overflow-wrap:anywhere;font:12.5px/1.45 "Courier New",ui-monospace,monospace;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:10px;margin:0 0 10px;max-height:26vh;overflow:auto}
+
+/* partidos: equipo, categoría y marcador */
+.gti{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:4px;font-size:13px}
+.gtn{font-weight:800}
+.gsep{color:var(--mut)}
+.gsc{font-weight:700;color:var(--ink)}
+.gres{font-style:normal;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+.gres.w{background:#15803d}.gres.l{background:#b91c1c}.gres.t{background:#475569}
+
+/* ===== Equipos con color suave ===== */
+[data-c="Primera"]{--cc:#d9674f;--cx:#fff}
+[data-c="Segunda"]{--cc:#e0963f;--cx:#fff}
+[data-c="Tercera"]{--cc:#d9b73f;--cx:#2a2208}
+[data-c="Cuarta"]{--cc:#4fa872;--cx:#fff}
+[data-c="Pasarela"]{--cc:#3fa89d;--cx:#fff}
+[data-c="Juvenil"]{--cc:#8570cc;--cx:#fff}
+[data-c="Juvenil Mayor"]{--cc:#b863bd;--cx:#fff}
+[data-c="Cadetes"]{--cc:#4a9cce;--cx:#fff}
+.rm.rcat[data-c]{background:var(--cc);color:var(--cx)}
+.rm.v{background:#3b7fc0}
+.rm.f{background:#c9588f}
+.tcard .tcc span[data-c]{background:color-mix(in srgb,var(--cc) 18%,var(--card));border-color:color-mix(in srgb,var(--cc) 55%,transparent);color:var(--ink)}
+.rgc[data-c]{display:inline-block;background:color-mix(in srgb,var(--cc) 20%,transparent);color:var(--ink);border-left:4px solid var(--cc);padding:3px 11px;border-radius:8px;letter-spacing:.07em}
+.seg button[data-id=""]{--g1:#e0903f}
+.seg button[data-id="v"]{--g1:#3b7fc0}
+.seg button[data-id="f"]{--g1:#c9588f}
+.seg button[data-id]{color:var(--ink);background:color-mix(in srgb,var(--g1) 10%,transparent)}
+.seg button[data-id].on{background:var(--g1);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.tcard{border-width:2px 2px 2px 6px;border-color:var(--line) var(--line) var(--line) var(--tc,var(--acc))}
+.tcard.rv-v{--tc:#3b7fc0;background:linear-gradient(100deg,color-mix(in srgb,#3b7fc0 7%,var(--card)),var(--card) 55%)}
+.tcard.rv-f{--tc:#c9588f;background:linear-gradient(100deg,color-mix(in srgb,#c9588f 7%,var(--card)),var(--card) 55%)}
+.tcard.rv-v i{color:#3b7fc0}.tcard.rv-f i{color:#c9588f}
+.tmnewb,.tmnewb:hover{background:linear-gradient(135deg,#e0903f,#c9588f);color:#fff;border:0;font-size:16px}
+.stp{display:inline-block;color:#fff;background:#d17a4a;padding:4px 12px;border-radius:999px}
+.tmw.on{border-color:#4fa872;background:color-mix(in srgb,#4fa872 8%,var(--card))}
+.tmp.on i{background:#4fa872;border-color:#4fa872;color:#fff}
+.ct{border-color:color-mix(in srgb,var(--cc) 60%,transparent);background:color-mix(in srgb,var(--cc) 8%,var(--row))}
+.ct.on{background:var(--cc);border-color:var(--cc);color:var(--cx)}
+[data-act="tmsave"]{background:#4fa872;color:#fff;border:0}
 </style>
 </head>
 <body>
@@ -780,10 +815,10 @@ function vAvg(){const l=agg();
   return `<h2>Promedio por partido (${db.games.length} partidos)</h2>`+table(l,true)+`<p class="mut">Promedio por partido de cada jugador.</p>
   <div class="row"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><input id="file" type="file" accept=".json" hidden></div>`}
 function vHist(){
-  if(open){const g=db.games.find(x=>x.id===open);if(g)return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>`+
+  if(open){const g=db.games.find(x=>x.id===open);if(g)return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>${gDetailInfo(g)}`+
    (g.qp?qBoard(g.qp,-1,g.rows.reduce((a,r)=>a+d(r.s).pts,0)):"")+table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
   if(!db.games.length)return `<div class="empty">Todavía no hay partidos guardados.</div>`;
-  return db.games.slice().reverse().map(g=>`<div class="game"><div><b>${g.rival?"vs "+esc(g.rival):"Partido"}</b><div class="mut">${g.date} · ${g.rows.length} jugadores</div></div><div class="gr">${gstats(g)}<button class="open" data-act="open" data-id="${g.id}">Ver</button></div></div>`).join("")}
+  return db.games.slice().reverse().map(g=>gRow(g,g.rows)).join("")}
 
 function gstats(g){let ok=0,bad=0,pts=0;
   g.rows.forEach(r=>{const s=r.s;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);
@@ -994,11 +1029,11 @@ const p2=n=>String(n).padStart(2,"0");
 const dayStamp=t=>{const d=new Date(t);return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())};
 const fileTxt=n=>"Observaciones"+(n.pn?" · "+n.pn:"")+"\n"+fmtT(n.t)+"\n\n"+n.text;
 const fileAll=()=>"Observaciones del equipo\n\n"+db.notes.slice().reverse().map(n=>fmtT(n.t)+(n.pn?" · "+n.pn:"")+"\n"+n.text).join("\n\n──────────\n\n");
-async function saveTxt(name,text){
-  const blob=new Blob(["\ufeff"+text.replace(/\r?\n/g,"\r\n")],{type:"text/plain;charset=utf-8"});
+async function saveTxt(name,text,mime){
+  const blob=new Blob(["\ufeff"+text.replace(/\r?\n/g,"\r\n")],{type:mime||"text/plain;charset=utf-8"});
   const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   if(ios&&navigator.canShare&&navigator.share){
-    try{const f=new File([blob],name,{type:"text/plain"});
+    try{const f=new File([blob],name,{type:(mime||"text/plain").split(";")[0]});
       if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}
     catch(e){if(e&&e.name==="AbortError")return}}
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.style.display="none";
@@ -1210,14 +1245,16 @@ function act(a,s){
   else if(a==="end"){
     const rows=db.roster.map(p=>({id:p.id,name:p.name,num:p.num,s:row(p.id)})).filter(r=>Object.values(r.s).some(v=>v>0));
     if(!rows.length){note("Todavía no hay estadísticas que guardar.");return}
-    ask("¿Terminar el partido y guardarlo?",()=>{const qz=qInfo(),g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};if(db.cur.qp.length){g.qp=db.cur.qp.slice();if(!qz.done)g.qp.push(qz.live)}if(db.cur.log.length)g.log=db.cur.log.slice();
-    db.games.push(g);db.cur={rival:"",date:today(),rows:{}};C0();save();open=g.id;tab="teams";render()})}
+    askRp({text:"¿Terminar el partido y guardarlo?",okText:"Guardar partido",onOk:rp=>{const qz=qInfo(),g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};if(db.cur.qp.length){g.qp=db.cur.qp.slice();if(!qz.done)g.qp.push(qz.live)}if(db.cur.log.length)g.log=db.cur.log.slice();if(rp!=null)g.rp=rp;
+    db.games.push(g);db.cur={rival:"",date:today(),rows:{}};C0();save();open=g.id;tab="teams";render()}})}
   else if(a==="endq"){const q0=qInfo();if(q0.done)return;
     ask(`¿Seguro que quieres terminar el cuarto ${q0.q}? Se guardan sus ${q0.live} puntos.`,()=>{const z=qInfo(),c=C0();if(z.done)return;
       db.roster.forEach(p=>{c.fb[p.id]=(db.cur.rows[p.id]&&db.cur.rows[p.id].fal)||0});c.qp.push(z.live);c.qf.push(z.fouls);c.cnt={};qpop=z.q-1;save();render();qpop=-1;
       if(z.q===2)toast("info","Segunda mitad","Ahora tienes 3 tiempos fuera.");
       else if(z.q===4)toast("info","Cuarto 4 terminado","Ya puedes terminar el partido y guardarlo.")},{no:"No",si:"Sí"})}
   else if(a==="delall"){ask("¿Borrar a TODOS los jugadores? Se borran también las estadísticas y los cuartos de este partido. Los partidos ya guardados no se borran.",()=>{db.roster=[];db.cur.rows={};db.cur.qp=[];db.cur.qf=[];db.cur.to={a:2,b:3};db.cur.bn={};db.cur.fb={};db.cur.inv={};db.cur.cnt={};db.cur.log=[];save();render()})}
+  else if(a==="grp"){const g=db.games.find(x=>x.id===Number(s.id));if(!g)return;
+    askRp({text:"Marcador del partido",value:g.rp,okText:"Guardar",onOk:rp=>{if(rp==null)delete g.rp;else g.rp=rp;save();render()}})}
   else if(a==="open"){open=Number(s.id);render()}
   else if(a==="back"){open=null;render()}
   else if(a==="delg"){ask("¿Borrar este partido? Los promedios se recalculan.",()=>{db.games=db.games.filter(x=>x.id!==Number(s.id));open=null;save();render()})}
@@ -1542,13 +1579,9 @@ function tmInfo(t){
   gs.forEach(x=>x.pts=x.rows.reduce((a,r)=>a+d(r.s).pts,0));
   const sum=gs.reduce((a,x)=>a+x.pts,0);
   return{ids,gs,sum,ppg:gs.length?sum/gs.length:0}}
-const rmTag=t=>t.rama?`<em class="rm ${t.rama}">${RAMAS[t.rama]}</em>`:"";
-const catTags=t=>{const ids=tmInfo(t).ids,cats=t.cats||{},set=new Set();
-  ids.forEach(id=>{if(CATS.indexOf(cats[id])>=0)set.add(cats[id])});
-  const L=CATS.filter(c=>set.has(c));if(!L.length)return"";
-  const shown=L.slice(0,3),more=L.length-shown.length;
-  return shown.map(c=>`<em class="rm cat" title="Categoría en la que juegan">${c}</em>`).join("")+(more?`<em class="rm cat">+${more}</em>`:"")};
-const rmFull=t=>rmTag(t)+catTags(t);
+const catTags=t=>{const all=tmAll(),ids=(t.pids||[]).filter(id=>all.some(p=>p.id===id)),cats=t.cats||{};
+  return CATS.filter(c=>ids.some(id=>cats[id]===c)).map(c=>`<em class="rm rcat" data-c="${c}">${esc(c)}</em>`).join("")};
+const rmTag=t=>(t.rama?`<em class="rm ${t.rama}">${RAMAS[t.rama]}</em>`:"")+catTags(t);
 function tmList(){
   const T=TMS(),cnt=k=>T.filter(t=>t.rama===k).length;
   let h=`<h2 style="margin:4px 0 0">Registro de equipos</h2>
@@ -1559,21 +1592,102 @@ function tmList(){
   else h+=L.map(t=>{
     const inf=tmInfo(t),cats=t.cats||{},cc={};
     inf.ids.forEach(id=>{const c=cats[id];if(CATS.indexOf(c)>=0)cc[c]=(cc[c]||0)+1});
-    const chips=CATS.filter(c=>cc[c]).map(c=>`<span>${c} · ${cc[c]}</span>`).join("");
-    return `<button class="tcard" data-act="tmopen" data-id="${t.id}"><span class="tch"><b>${esc(t.name)}</b>${rmFull(t)}</span><span class="tcs">${plural(inf.ids.length,"jugador","jugadores")} · ${plural(inf.gs.length,"partido","partidos")}${inf.gs.length?" · "+inf.ppg.toFixed(1)+" pts/partido":""}</span>${chips?`<span class="tcc">${chips}</span>`:""}<i aria-hidden="true">›</i></button>`}).join("");
-  return h+`<div class="row" style="margin-top:6px"><button class="primary" data-act="tmnew" style="flex:1;padding:15px">+ Nuevo equipo</button></div>`}
-function tmDetail(){return tmDetailBody()+bkRow()}
-function tmDetailBody(){
+    const chips=CATS.filter(c=>cc[c]).map(c=>`<span data-c="${c}">${c} · ${cc[c]}</span>`).join("");
+    return `<button class="tcard rv-${t.rama||"n"}" data-act="tmopen" data-id="${t.id}"><span class="tch"><b>${esc(t.name)}</b>${rmTag(t)}</span><span class="tcs">${plural(inf.ids.length,"jugador","jugadores")} · ${plural(inf.gs.length,"partido","partidos")}${inf.gs.length?" · "+inf.ppg.toFixed(1)+" pts/partido":""}</span>${chips?`<span class="tcc">${chips}</span>`:""}<i aria-hidden="true">›</i></button>`}).join("");
+  return h+`<div class="row" style="margin-top:6px"><button class="primary tmnewb" data-act="tmnew" style="flex:1;padding:15px">+ Nuevo equipo</button></div>`}
+/* ===== Marcador, equipo y categoría por partido, documento del equipo ===== */
+const gSum=rows=>{let ok=0,bad=0,pts=0;rows.forEach(r=>{const s=r.s;pts+=(s.m1||0)+2*(s.m2||0)+3*(s.m3||0);ok+=(s.def||0)+(s.reb||0)+(s.ast||0);bad+=(s.fal||0)+(s.to||0)+(s.mal||0)});return{ok,bad,pts}};
+function gTeams(g){
+  const T=TMS(),ids=g.rows.map(r=>r.id),n=ids.length;if(!n)return[];
+  const L=T.map(t=>{const mine=ids.filter(id=>(t.pids||[]).indexOf(id)>=0),cs=t.cats||{};
+    return{t,n:mine.length,cats:CATS.filter(c=>mine.some(id=>cs[id]===c))}}).filter(x=>x.n>0);
+  if(!L.length)return[];
+  L.sort((a,b)=>b.n-a.n);
+  const big=L.filter(x=>x.n*2>=n);
+  return big.length?big:[L[0]]}
+const tcTags=x=>`<span class="gtn">${esc(x.t.name)}</span>`+x.cats.map(c=>`<em class="rm rcat" data-c="${c}">${esc(c)}</em>`).join("");
+const gP=g=>g.pt!=null?g.pt:gSum(g.rows).pts;
+const gResult=g=>{if(g.rp==null||g.rp==="")return null;const p=gP(g),r=Number(g.rp);return{p,r,w:p>r?"Ganó":p<r?"Perdió":"Empate",k:p>r?"w":p<r?"l":"t"}};
+const gScoreLine=g=>{const q=gResult(g);return q?`<span class="gsc">Quedó ${q.p} – ${q.r}</span><em class="gres ${q.k}">${q.w}</em>`:`<span class="gsc">Quedó en ${gP(g)} pts</span>`};
+const gScoreText=g=>{const q=gResult(g);return q?`Quedó ${q.p} – ${q.r} (${q.w})`:`Quedó en ${gP(g)} pts`};
+const gRow=(g,rows,tm)=>{
+  const L=tm?[{t:tm,cats:CATS.filter(c=>rows.some(r=>(tm.cats||{})[r.id]===c))}]:gTeams(g),tl=L.map(tcTags).join('<span class="gsep">·</span>');
+  return `<div class="game"><div><b>${g.rival?"vs "+esc(g.rival):"Partido"}</b><div class="mut">${g.date} · ${plural(rows.length,"jugador","jugadores")}</div>${tl?`<div class="gti">${tl}</div>`:""}<div class="gti">${gScoreLine(g)}</div></div><div class="gr">${gstats({rows})}<button class="open" data-act="open" data-id="${g.id}">Ver</button></div></div>`};
+const gDetailInfo=g=>{const tl=gTeams(g).map(tcTags).join('<span class="gsep">·</span>');
+  return `<div class="gti" style="margin:0 0 10px">${tl}${tl?'<span class="gsep">·</span>':""}${gScoreLine(g)}<button class="ghost sv" data-act="grp" data-id="${g.id}" style="padding:6px 12px;font-size:13px">${g.rp==null?"Agregar":"Editar"} marcador del rival</button></div>`};
+function askRp(o){
+  const ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99";
+  ov.innerHTML=`<div role="dialog" aria-modal="true" style="background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px;max-width:360px;width:100%"><p style="margin:0 0 12px;font-size:17px">${o.text}</p><label class="mut" for="rpin" style="display:block;margin:0 0 6px;font-size:13px">Puntos del rival (opcional)</label><input id="rpin" type="number" inputmode="numeric" min="0" max="300" placeholder="Ej. 24" value="${o.value==null?"":o.value}" style="width:100%;margin:0 0 14px"><div class="row" style="margin:0"><button class="ghost" id="rpno">Cancelar</button><button class="primary" id="rpok" style="flex:1">${o.okText}</button></div></div>`;
+  document.body.appendChild(ov);const inp=ov.querySelector("#rpin");setTimeout(()=>inp.focus(),30);
+  const close=()=>ov.remove(),ok=()=>{const v=inp.value.trim(),n=v===""?null:Math.max(0,Math.min(300,Math.round(Number(v))));if(v!==""&&isNaN(n))return;close();o.onOk(n)};
+  ov.querySelector("#rpno").onclick=close;ov.querySelector("#rpok").onclick=ok;
+  inp.onkeydown=e=>{if(e.key==="Enter")ok();if(e.key==="Escape")close()};ov.addEventListener("click",e=>{if(e.target===ov)close()})}
+const slug=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")||"equipo";
+function tmDocData(t){const inf=tmInfo(t),all=tmAll(),cs=t.cats||{},cats={};
+  inf.ids.forEach(id=>{if(cs[id])cats[id]=cs[id]});
+  return{formato:"basquet-equipo",v:1,generado:new Date().toISOString(),
+    equipo:{id:t.id,name:t.name,rama:t.rama||"",pids:inf.ids.slice(),cats},
+    jugadores:inf.ids.map(id=>{const p=all.find(x=>x.id===id)||{};return{id,name:p.name||"",num:p.num}}),
+    partidos:inf.gs.map(x=>{const o={id:x.g.id,date:x.g.date,rival:x.g.rival||"",pt:gP(x.g),rows:x.rows.map(r=>({id:r.id,name:r.name,num:r.num,s:r.s}))};if(x.g.rp!=null)o.rp=x.g.rp;if(x.g.qp)o.qp=x.g.qp;return o})}}
+function tmDocHtml(t){
+  const inf=tmInfo(t),all=tmAll(),pl=id=>all.find(p=>p.id===id),cats=t.cats||{},D=tmDocData(t);
+  const m={};inf.gs.forEach(x=>x.rows.forEach(r=>{const o=m[r.id]||(m[r.id]={name:plabel(r),t:zero(),g:0});o.t=add(o.t,r.s);o.g++}));
+  const list=Object.values(m).sort((a,b)=>d(b.t).pts/b.g-d(a.t).pts/a.g);
+  const used=CATS.filter(c=>inf.ids.some(id=>cats[id]===c));
+  const when=new Date().toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+  const jug=inf.ids.map(pl).filter(Boolean).sort((a,b)=>Number(a.num)-Number(b.num));
+  const jt=`<div class="wrap jt"><table><thead><tr><th>#</th><th>Jugador</th><th>Categoría</th><th>PJ</th><th>PTS</th></tr></thead><tbody>${jug.map(p=>{const o=m[p.id];return `<tr><td>${esc(String(p.num))}</td><td>${esc(p.name||"—")}</td><td>${esc(cats[p.id]||"—")}</td><td>${o?o.g:0}</td><td>${o?d(o.t).pts:0}</td></tr>`}).join("")}</tbody></table></div>`;
+  const gm=inf.gs.slice().reverse().map(x=>{const g=x.g,s=gSum(x.rows),qt=g.qp?`<p class="meta">Por cuarto: ${g.qp.map((v,i)=>"C"+(i+1)+" "+v).join(" · ")}</p>`:"";
+    return `<section class="gm"><h3>${esc(g.date)}${g.rival?" · vs "+esc(g.rival):""}</h3><p class="meta"><b>${esc(gScoreText(g))}</b> · Aciertos ${s.ok} · Errores ${s.bad} · Puntos del equipo ${s.pts}</p>${qt}${table(x.rows.map(r=>({name:plabel(r),t:r.s})),false,true)}</section>`}).join("");
+  const css=`:root{color-scheme:light dark;--bg:#faf7f0;--fg:#1c2330;--mut:#667085;--line:#ddd6c8;--head:#0b2a4a;--acc:#c2410c}
+@media (prefers-color-scheme:dark){:root{--bg:#121820;--fg:#e8edf4;--mut:#9aa3b0;--line:#2c3644;--head:#16314f;--acc:#ff8a4c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:0 0 4px;font-size:28px}h2{margin:28px 0 10px;font-size:20px;border-bottom:2px solid var(--line);padding-bottom:4px}h3{margin:18px 0 4px;font-size:16px}
+.meta{margin:2px 0 8px;color:var(--mut)}.tag{display:inline-block;background:var(--head);color:#fff;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;margin-right:6px}
+.wrap{overflow-x:auto;margin:6px 0 10px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:6px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}.jt td:nth-child(2),.jt td:nth-child(3),.jt th:nth-child(2),.jt th:nth-child(3){text-align:left}
+thead th{background:var(--head);color:#fff}tr.tot td{font-weight:800;border-top:2px solid var(--fg)}.gm{break-inside:avoid}footer{margin-top:30px;color:var(--mut);font-size:13px}
+@media print{body{background:#fff;color:#000}thead th{background:#ddd!important;color:#000}}`;
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t.name)} · Básquet</title><style>${css}</style></head><body><main>
+<h1>${esc(t.name)}</h1>
+<p class="meta">${t.rama?`<span class="tag">${RAMAS[t.rama]}</span>`:""}${used.map(c=>`<span class="tag" style="background:var(--acc)">${esc(c)}</span>`).join("")}${plural(inf.ids.length,"jugador","jugadores")} · ${plural(inf.gs.length,"partido","partidos")}${inf.gs.length?" · "+inf.ppg.toFixed(1)+" pts por partido":""}</p>
+<p class="meta">Documento generado el ${when}. Se puede volver a cargar en la app: Equipos → Cargar documento.</p>
+<h2>Jugadores</h2>${jt}
+<h2>Partidos (${inf.gs.length})</h2>${gm||'<p class="meta">Todavía no hay partidos guardados.</p>'}
+<h2>Promedios</h2>${list.length?table(list,true):'<p class="meta">Sin datos.</p>'}
+<h2>Totales</h2>${list.length?table(list,false,true):'<p class="meta">Sin datos.</p>'}
+</main><script type="application/json" id="basquet-equipo">${JSON.stringify(D).replace(/</g,"\\u003c")}<\/script><\/body><\/html>`}
+function tmImport(txt){
+  let D=null;
+  try{const mm=String(txt).match(/<script[^>]*id="basquet-equipo"[^>]*>([\s\S]*?)<\/script>/);D=JSON.parse(mm?mm[1]:String(txt).trim())}catch(e){D=null}
+  if(!D||D.formato!=="basquet-equipo"||!D.equipo||!Array.isArray(D.partidos)||!Array.isArray(D.equipo.pids)){note("Ese archivo no es un documento de equipo de Básquet.");return}
+  const T=TMS(),E=D.equipo;let nuevos=0;
+  D.partidos.forEach(p=>{if(!p||!Array.isArray(p.rows))return;const rows=p.rows.map(r=>({id:r.id,name:r.name,num:r.num,s:Object.assign(zero(),r.s)}));
+    let g=db.games.find(x=>x.id===p.id);
+    if(!g){g={id:p.id,date:p.date,rival:p.rival||"",rows};if(p.pt!=null&&p.pt!==gSum(rows).pts)g.pt=p.pt;if(p.rp!=null)g.rp=p.rp;if(p.qp)g.qp=p.qp;db.games.push(g);nuevos++}
+    else{rows.forEach(r=>{if(!g.rows.some(x=>x.id===r.id))g.rows.push(r)});if(g.rp==null&&p.rp!=null)g.rp=p.rp}});
+  db.games.sort((a,b)=>a.id-b.id);
+  (D.jugadores||[]).forEach(p=>{if(p&&p.id&&!tmAll().some(x=>x.id===p.id))db.roster.push({id:p.id,name:p.name||"",num:p.num})});
+  const nm=String(E.name||"Equipo").trim()||"Equipo";
+  let t=T.find(x=>x.id===E.id)||T.find(x=>x.name.trim().toLowerCase()===nm.toLowerCase()&&(x.rama||"")===(E.rama||""));
+  if(t){E.pids.forEach(id=>{if(t.pids.indexOf(id)<0)t.pids.push(id)});t.cats=Object.assign(t.cats||{},E.cats||{});if(!t.rama&&E.rama)t.rama=E.rama}
+  else{t={id:E.id||"t"+Date.now(),name:nm,rama:E.rama||"",pids:E.pids.slice(),cats:Object.assign({},E.cats||{})};T.push(t)}
+  save();tab="teams";tmSel=t.id;tmView="team";tmPl=null;open=null;tmForm=null;render();window.scrollTo(0,0);
+  toast("info","Equipo cargado",esc(t.name)+" · "+plural(t.pids.length,"jugador","jugadores")+" · "+plural(nuevos,"partido nuevo","partidos nuevos"))}
+document.addEventListener("change",e=>{if(e.target.id==="tmfile"&&e.target.files[0]){const r=new FileReader();r.onload=()=>tmImport(String(r.result));r.onerror=()=>note("No se pudo leer el archivo.");r.readAsText(e.target.files[0]);e.target.value=""}});
+function tmDetail(){
   const T=TMS(),t=T.find(x=>x.id===tmSel);
   if(!t){tmView=null;return tmList()}
   const all=tmAll(),pl=id=>all.find(p=>p.id===id),inf=tmInfo(t),pids=inf.ids,mine=pids.map(pl),cats=t.cats||{};
   if(tmPl&&pids.indexOf(tmPl)<0)tmPl=null;
   let h=`<div class="row"><button class="ghost" data-act="tmback">← Equipos</button></div>
-  <div class="row" style="align-items:center;margin-top:6px"><h2 style="margin:0;flex:1">${esc(t.name)} <span class="rmw">${rmFull(t)}</span></h2><button class="ghost" data-act="tmedit">Editar</button><button class="ghost" data-act="tmdel">Eliminar</button></div>`;
+  <div class="row" style="align-items:center;margin-top:6px"><h2 style="margin:0;flex:1">${esc(t.name)} ${rmTag(t)}</h2><button class="ghost" data-act="tmedit">Editar</button><button class="ghost" data-act="tmdel">Eliminar</button></div>
+  <div class="row" style="margin-top:8px"><button class="ghost sv" data-act="tmdoc">${IC_DL}Descargar documento</button><button class="ghost" data-act="tmload">Cargar documento</button><input id="tmfile" type="file" accept=".html,.htm,.json" hidden></div>`;
   if(!mine.length)return h+`<div class="empty">Este equipo no tiene jugadores. Toca Editar para agregarlos.</div>`;
   const chip=p=>`<button class="pc${tmPl===p.id?" on":""}" data-act="tmpl" data-id="${p.id}">${esc(plabel(p))}</button>`;
   h+=`<h3 class="nh" style="margin:14px 0 6px">Jugadores</h3><div class="pcs"><button class="pc${!tmPl?" on":""}" data-act="tmpl" data-id="">Todo el equipo</button></div>`;
-  CATS.forEach(c=>{const ps=mine.filter(p=>cats[p.id]===c);if(ps.length)h+=`<div class="rgc">${c}</div><div class="pcs">${ps.map(chip).join("")}</div>`});
+  CATS.forEach(c=>{const ps=mine.filter(p=>cats[p.id]===c);if(ps.length)h+=`<div class="rgc" data-c="${c}">${c}</div><div class="pcs">${ps.map(chip).join("")}</div>`});
   const none=mine.filter(p=>CATS.indexOf(cats[p.id])<0);
   if(none.length)h+=(none.length<mine.length?`<div class="rgc">Sin categoría</div>`:"")+`<div class="pcs">${none.map(chip).join("")}</div>`;
   if(tmPl){const p=pl(tmPl),gs=db.games.map(g=>({g,r:g.rows.find(r=>r.id===tmPl)})).filter(x=>x.r);
@@ -1586,7 +1700,7 @@ function tmDetailBody(){
   const m={};gs.forEach(x=>x.rows.forEach(r=>{const o=m[r.id]||(m[r.id]={name:plabel(r),t:zero(),g:0});o.t=add(o.t,r.s);o.g++}));
   const list=Object.values(m).sort((a,b)=>d(b.t).pts/b.g-d(a.t).pts/a.g);
   h+=`<div class="lgs lgs3" style="margin-top:14px"><div><small>PARTIDOS</small><b>${gs.length}</b></div><div><small>POR PARTIDO</small><b>${inf.ppg.toFixed(1)}</b></div><div class="tt"><small>JUGADORES</small><b>${mine.length}</b></div></div>`;
-  h+=`<h3 class="nh" style="margin:16px 0 8px">Historial de partidos (${gs.length})</h3>`+gs.slice().reverse().map(x=>`<div class="game"><div><b>${x.g.rival?"vs "+esc(x.g.rival):"Partido"}</b><div class="mut">${x.g.date} · ${plural(x.rows.length,"jugador","jugadores")}</div><div class="gpt"><b>${x.pts}</b> ${x.pts===1?"punto":"puntos"}</div></div><div class="gr">${gstats({rows:x.rows})}<button class="open" data-act="open" data-id="${x.g.id}">Ver</button></div></div>`).join("");
+  h+=`<h3 class="nh" style="margin:16px 0 8px">Historial de partidos (${gs.length})</h3>`+gs.slice().reverse().map(x=>gRow(x.g,x.rows,t)).join("");
   h+=`<h3 class="nh" style="margin:16px 0 8px">Promedio por partido</h3>`+table(list,true)+`<h3 class="nh" style="margin:16px 0 8px">Totales</h3>`+table(list,false,true);
   return h}
 function tmFormView(){
@@ -1601,15 +1715,15 @@ function tmFormView(){
   ${all.length?`<div class="tmpl">${all.map(p=>{const on=f.pids.indexOf(p.id)>=0;return `<div class="tmw${on?" on":""}"><button class="tmp${on?" on":""}" data-act="tmtog" data-id="${p.id}" aria-pressed="${on}"><i aria-hidden="true">${on?"✓":""}</i>${esc(plabel(p))}</button>${on?`<div class="cts" role="group" aria-label="Categoría de ${esc(plabel(p))}">${CATS.map(c=>`<button class="ct${f.cats[p.id]===c?" on":""}" data-act="tmcat" data-id="${p.id}" data-c="${c}">${c}</button>`).join("")}</div>`:""}</div>`}).join("")}</div>`
   :`<div class="empty">Todavía no hay jugadores. Agrégalos en la pestaña Partido y vuelve aquí.</div>`}
   <div class="row"><button class="ghost" data-act="tmcancel">Cancelar</button><button class="primary" data-act="tmsave" style="flex:1">Guardar equipo</button></div>`}
-function tmGameDetail(g){return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>`+
+function tmGameDetail(g){return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>${gDetailInfo(g)}`+
    (g.qp?qBoard(g.qp,-1,g.rows.reduce((a,r)=>a+d(r.s).pts,0)):"")+table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`}
 
-const bkRow=()=>`<div class="row" style="margin-top:16px"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><input id="file" type="file" accept=".json" hidden></div>`;
 function vTeams(){
   if(tmForm)return tmFormView();
   if(open){const g=db.games.find(x=>x.id===open);if(g)return tmGameDetail(g);open=null}
   if(tmView==="team")return tmDetail();
-  return tmList()+bkRow()}
+  const gl=db.games.length?`<h3 class="nh" style="margin:18px 0 8px">Partidos guardados (${db.games.length})</h3>`+db.games.slice().reverse().map(g=>gRow(g,g.rows)).join(""):"";
+  return tmList()+gl+`<div class="row" style="margin-top:16px"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><button class="ghost" data-act="tmload">Cargar equipo</button><input id="file" type="file" accept=".json" hidden><input id="tmfile" type="file" accept=".html,.htm,.json" hidden></div>`}
 function tmAct(a,s){
   const T=TMS();let top=false;
   if(a==="tmnew"){tmForm={id:null,name:"",pids:[],cats:{},rama:tmFilter||"v"};top=true}
@@ -1629,6 +1743,8 @@ function tmAct(a,s){
   else if(a==="tmback"){tmView=null;top=true}
   else if(a==="tmflt"){tmFilter=s.id||""}
   else if(a==="tmpl"){tmPl=s.id||null}
+  else if(a==="tmdoc"){const t=T.find(x=>x.id===tmSel);if(!t)return;saveTxt("equipo-"+slug(t.name)+"-"+dayStamp(Date.now())+".html",tmDocHtml(t),"text/html;charset=utf-8");return}
+  else if(a==="tmload"){const f=document.getElementById("tmfile");if(f)f.click();return}
   else if(a==="tmdel"){const t=T.find(x=>x.id===tmSel);if(!t)return;
     ask("¿Eliminar el equipo "+esc(t.name)+"? Los jugadores y sus partidos no se borran.",()=>{db.teams=T.filter(x=>x.id!==t.id);tmSel=null;tmPl=null;tmView=null;save();render();window.scrollTo(0,0)},{si:"Eliminar"});return}
   render();if(top)window.scrollTo(0,0)}
