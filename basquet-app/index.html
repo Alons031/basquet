@@ -686,6 +686,21 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 #lpm .lpcs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:8px 12px 10px}
 #lpm .lpsw{width:100%;aspect-ratio:1;min-width:38px;border-radius:50%;border:3px solid transparent;background:var(--sw);padding:0;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
 #lpm .lpsw.on{border-color:var(--ink)}
+
+.sbt.rv:not(.sg){transition:padding .3s}
+.sbt.rv.pick:not(.sg){padding-right:58px}
+.sbpk{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.sbpk button{width:42px;height:42px;padding:0;border-radius:50%;font-size:16px;font-weight:800;color:var(--ink);border:2px solid var(--c);background:color-mix(in srgb,var(--c) 30%,var(--card));box-shadow:0 3px 8px rgba(0,0,0,.25);opacity:0;transform:translateX(34px) scale(.3);touch-action:manipulation;transition:opacity .15s,transform .15s}
+.sbpk button.mn{width:30px;height:30px;font-size:12px;background:var(--card);border-color:color-mix(in srgb,var(--c) 50%,var(--line));opacity:0}
+.sbt.rv.pick .sbpk{pointer-events:auto}
+.sbt.rv.pick .sbpk button{animation:pkin .42s cubic-bezier(.2,1.6,.4,1) calc(var(--i)*70ms) forwards}
+@keyframes pkin{0%{opacity:0;transform:translateX(34px) scale(.3)}100%{opacity:1;transform:none}}
+.sbpk button:active{transform:scale(.9)!important}
+.sbpk{top:calc(50% - 5px);gap:5px;right:9px}.sbpk button{width:38px;height:38px;font-size:15px}.sbpk button.mn{width:27px;height:27px}
+.sbt.rv.pick:not(.sg){padding-right:54px}
+.sbpk{top:50%;gap:10px;right:8px}.sbpk button{width:48px;height:48px;font-size:18px}
+.sbt.rv.pick:not(.sg){padding-right:64px}
+.sbpk{top:calc(50% - 4px);gap:9px}.sbpk button{width:46px;height:46px}
 </style>
 </head>
 <body>
@@ -851,7 +866,7 @@ function table(list,avg,total){
 const curPts=()=>{let n=0;for(const k in (db.cur.rows||{})){const r=db.cur.rows[k];if(r&&typeof r==="object")n+=(r.m1||0)+2*(r.m2||0)+3*(r.m3||0)}return n};
 const sbo=w=>window.sbOpen&&window.sbOpen[w]?" split still":"",sbq=w=>window.sbOpen&&window.sbOpen[w]&&window.sbCells?`<div class="sbq">${window.sbCells(w)}</div>`:"";
 function sbHtml(){const c=db.cur,rp=Number(c.rp)||0;
-  return `<div class="sbx" id="sbx"><div class="sbt me${sbo("me")}"><small id="sbmn">${esc(c.tn||"Mi equipo")}</small><b id="sbms">${curPts()}</b><span class="sbl">Nosotros</span>${sbq("me")}</div><div class="sbt rv${sbo("rv")}"><small id="sbrn">${esc((c.rival||"").trim()||"Rival")}</small><b id="sbrs">${rp}</b><div class="sbc"><button data-act="rvp" data-id="-1" aria-label="Quitar 1 punto al rival">−1</button><button data-act="rvp" data-id="1">+1</button><button data-act="rvp" data-id="2">+2</button><button data-act="rvp" data-id="3">+3</button></div>${sbq("rv")}</div></div>`}
+  return `<div class="sbx" id="sbx"><div class="sbt me${sbo("me")}"><small id="sbmn">${esc(c.tn||"Mi equipo")}</small><b id="sbms">${curPts()}</b><span class="sbl">Nosotros</span>${sbq("me")}</div><div class="sbt rv${sbo("rv")}${window.sbPick?" pick":""}"><small id="sbrn">${esc((c.rival||"").trim()||"Rival")}</small><b id="sbrs">${rp}</b><div class="sbpk" aria-label="Puntos del rival"><button data-act="rvp" data-id="3" style="--i:0">+3</button><button data-act="rvp" data-id="2" style="--i:1">+2</button><button data-act="rvp" data-id="1" style="--i:2">+1</button></div>${sbq("rv")}</div></div>`}
 function vGame(){
   let h=`<div class="row"><input id="rival" placeholder="Rival (opcional)" value="${esc(db.cur.rival)}"><input id="date" type="date" value="${db.cur.date}"></div>
   <div class="row"><button class="ghost sv tmb" data-act="lteam" aria-haspopup="dialog">${IC_TEAM}Agregar equipo</button><button class="primary" data-act="addp" style="flex:1;padding:14px 10px">Agregar jugador</button></div>`+sbHtml();
@@ -1281,7 +1296,7 @@ function act(a,s){
       const id="p"+Date.now();db.roster.push({id,name:n||"",num});save();stripPop=id;render();stripPop=null;
       newPlayerFx(id,n||"",num)}})}
   else if(a==="lteam"){teamSheet(document.querySelector('[data-act="lteam"]'))}
-  else if(a==="rvp"){const c=db.cur;c.rp=Math.max(0,Math.min(300,(Number(c.rp)||0)+Number(s.id)));save();const q=document.getElementById("sbrs");if(q){q.textContent=c.rp;q.classList.remove("bump");void q.offsetWidth;q.classList.add("bump")}}
+  else if(a==="rvp"){const c=db.cur;c.rp=Math.max(0,Math.min(300,(Number(c.rp)||0)+Number(s.id)));save();window.sbPick=false;{const bx=document.querySelector(".sbt.rv");if(bx)bx.classList.remove("pick")}const q=document.getElementById("sbrs");if(q){q.textContent=c.rp;q.classList.remove("bump");void q.offsetWidth;q.classList.add("bump")}}
   else if(a==="tgl"){setOpen(openP===s.id?null:s.id)}
   else if(a==="editnum"){const p=db.roster.find(x=>x.id===s.id);if(!p)return;
     askNum({title:`Número de ${p.name?esc(p.name):"este jugador"}`,okText:"Guardar",num:p.num,editId:p.id,onOk:num=>{p.num=num;save();render()}})}
@@ -2175,13 +2190,18 @@ window.sbOpen={me:false,rv:false};
  const open=b=>{let q=b.querySelector(".sbq");if(!q){q=document.createElement("div");q.className="sbq";b.appendChild(q)}
   q.innerHTML=b.dataset.gid?gCells(b):cells(who(b));b.classList.remove("unsplit","still");void b.offsetWidth;b.classList.add("split");if(!b.dataset.gid)window.sbOpen[who(b)]=true;try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
  const close=b=>{if(!b.dataset.gid)window.sbOpen[who(b)]=false;b.classList.remove("split","still");b.classList.add("unsplit");setTimeout(()=>b.classList.remove("unsplit"),420)};
- document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.closest(".sbt");if(!b||e.target.closest(".sbc"))return;clearTimeout(T);closeUp=null;
+ document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.closest(".sbt");if(!b||e.target.closest(".sbpk"))return;clearTimeout(T);closeUp=null;
   if(b.classList.contains("split")){closeUp=b;return}
   T=setTimeout(()=>{T=null;open(b)},340)});
  document.addEventListener("pointerup",()=>{clearTimeout(T);T=null;if(closeUp){const b=closeUp;closeUp=null;close(b)}},true);
  document.addEventListener("pointercancel",()=>{clearTimeout(T);T=null;closeUp=null},true);
  document.addEventListener("contextmenu",e=>{if(e.target.closest&&e.target.closest(".sbt"))e.preventDefault()});
- document.addEventListener("scroll",()=>{if(T){clearTimeout(T);T=null}},true)})();
+ document.addEventListener("scroll",()=>{if(T){clearTimeout(T);T=null}},true);
+ window.sbPick=false;let lastTap=0,lastBox=null;
+ const setPick=(b,on)=>{window.sbPick=on;b.classList.toggle("pick",on)};
+ document.addEventListener("pointerdown",e=>{const pk=window.sbPick&&document.querySelector(".sbt.rv.pick");if(pk&&!pk.contains(e.target))setPick(pk,false)},true);
+ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".sbt.rv:not(.sg)");if(!b||e.target.closest(".sbpk")||b.classList.contains("split")||b.classList.contains("unsplit"))return;
+  const n=Date.now();if(lastBox===b&&n-lastTap<380){lastTap=0;setPick(b,!b.classList.contains("pick"));try{navigator.vibrate&&navigator.vibrate(10)}catch(x){}}else{lastTap=n;lastBox=b}})})();
 if("serviceWorker" in navigator){const had=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!window.__rl){window.__rl=1;location.reload()}});
   navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
