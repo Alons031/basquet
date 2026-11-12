@@ -642,6 +642,50 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 .tile.bn b{color:var(--ink)}.tile.bn span{color:var(--mut)}
 .tile .tbi{color:var(--pc)}
 .numb{--pc:#4a9cce;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 24%,var(--card)),color-mix(in srgb,var(--pc) 9%,var(--card)));color:var(--ink);border:2px solid color-mix(in srgb,var(--pc) 50%,var(--line));box-shadow:inset 0 -4px 0 var(--pc)}
+
+/* ===== Marcador nosotros / rival ===== */
+.sbx{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+.sbt{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 8px 10px;border-radius:18px;text-align:center;min-width:0;border:2px solid color-mix(in srgb,var(--c) 50%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--c) 22%,var(--card)),color-mix(in srgb,var(--c) 7%,var(--card)));box-shadow:inset 0 -5px 0 var(--c),0 2px 8px rgba(0,0,0,.14)}
+.sbt.me{--c:#4a9cce}.sbt.rv{--c:#d9674f}
+.sbt small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.sbt b{font-size:52px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink);margin:2px 0 4px}
+.sbt b.bump{animation:sbb .3s ease}
+@keyframes sbb{40%{transform:scale(1.18)}}
+.sbl{font-size:11px;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.sbc{display:flex;gap:5px;margin-bottom:4px}
+.sbc button{min-width:38px;padding:6px 8px;font-size:14px;font-weight:800;border-radius:10px;border:2px solid color-mix(in srgb,var(--c) 55%,var(--line));background:color-mix(in srgb,var(--c) 12%,var(--card));color:var(--ink);touch-action:manipulation}
+.sbc button:active{transform:scale(.94)}
+
+.sbt{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;overflow:hidden}
+.sbt>small,.sbt>b,.sbt>.sbl,.sbt>.sbc{transition:opacity .25s,transform .35s cubic-bezier(.3,1.4,.5,1),filter .25s}
+.sbt.split>small,.sbt.split>b,.sbt.split>.sbl,.sbt.split>.sbc{opacity:0;transform:scale(.6);filter:blur(3px);pointer-events:none}
+.sbt.split{animation:sbsh .35s ease-out;box-shadow:inset 0 -5px 0 var(--c),0 0 0 3px color-mix(in srgb,var(--c) 45%,transparent),0 6px 22px color-mix(in srgb,var(--c) 50%,transparent)}
+@keyframes sbsh{0%{transform:scale(1)}25%{transform:scale(.95)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+.sbq{position:absolute;inset:6px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;pointer-events:none;visibility:hidden}
+.sbt.split .sbq,.sbt.unsplit .sbq{visibility:visible}
+.qc{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;background:color-mix(in srgb,var(--c) 26%,var(--card));border:2px solid color-mix(in srgb,var(--c) 55%,transparent);min-width:0;opacity:0}
+.sbt.split .qc{animation:qcin .5s cubic-bezier(.2,1.5,.4,1) var(--d) forwards}
+.sbt.unsplit .qc{animation:qcout .3s ease-in forwards}
+@keyframes qcin{0%{opacity:0;transform:translate(var(--x),var(--y)) scale(.2) rotate(-12deg)}100%{opacity:1;transform:none}}
+@keyframes qcout{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.2)}}
+.qc small{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--mut)}
+.qc b{font-size:26px;line-height:1.05;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.qc.cur{background:color-mix(in srgb,var(--c) 55%,var(--card));border-color:var(--c)}
+.qc.cur small{color:var(--ink)}
+.qc.nil b{opacity:.4}
+
+.sbt{min-height:178px;padding:14px 10px 12px}
+.sbq{inset:8px;gap:8px}
+.qc b{font-size:30px}
+.sbt.split.still .qc{animation:none;opacity:1}
+.sbt.split.still{animation:none}
+.sbt.sg{min-height:160px}
+#lt .ftb svg,#lt .ftb::after{animation:none!important}
+#lt .ftb::after{display:none}
+
+#lpm .lpcs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:8px 12px 10px}
+#lpm .lpsw{width:100%;aspect-ratio:1;min-width:38px;border-radius:50%;border:3px solid transparent;background:var(--sw);padding:0;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+#lpm .lpsw.on{border-color:var(--ink)}
 </style>
 </head>
 <body>
@@ -804,13 +848,16 @@ function table(list,avg,total){
   if(total&&list.length>1)b+=tr({name:"Equipo",t:list.reduce((a,p)=>add(a,p.t),zero())},"tot");
   return `<div class="wrap"><table><thead><tr>${H.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${b}</tbody></table></div>`}
 
+const curPts=()=>{let n=0;for(const k in (db.cur.rows||{})){const r=db.cur.rows[k];if(r&&typeof r==="object")n+=(r.m1||0)+2*(r.m2||0)+3*(r.m3||0)}return n};
+const sbo=w=>window.sbOpen&&window.sbOpen[w]?" split still":"",sbq=w=>window.sbOpen&&window.sbOpen[w]&&window.sbCells?`<div class="sbq">${window.sbCells(w)}</div>`:"";
+function sbHtml(){const c=db.cur,rp=Number(c.rp)||0;
+  return `<div class="sbx" id="sbx"><div class="sbt me${sbo("me")}"><small id="sbmn">${esc(c.tn||"Mi equipo")}</small><b id="sbms">${curPts()}</b><span class="sbl">Nosotros</span>${sbq("me")}</div><div class="sbt rv${sbo("rv")}"><small id="sbrn">${esc((c.rival||"").trim()||"Rival")}</small><b id="sbrs">${rp}</b><div class="sbc"><button data-act="rvp" data-id="-1" aria-label="Quitar 1 punto al rival">−1</button><button data-act="rvp" data-id="1">+1</button><button data-act="rvp" data-id="2">+2</button><button data-act="rvp" data-id="3">+3</button></div>${sbq("rv")}</div></div>`}
 function vGame(){
   let h=`<div class="row"><input id="rival" placeholder="Rival (opcional)" value="${esc(db.cur.rival)}"><input id="date" type="date" value="${db.cur.date}"></div>
-  <div class="row"><button class="ghost sv tmb" data-act="lteam" aria-haspopup="dialog">${IC_TEAM}Agregar equipo</button><button class="primary" data-act="addp" style="flex:1;padding:14px 10px">Agregar jugador</button></div>`;
+  <div class="row"><button class="ghost sv tmb" data-act="lteam" aria-haspopup="dialog">${IC_TEAM}Agregar equipo</button><button class="primary" data-act="addp" style="flex:1;padding:14px 10px">Agregar jugador</button></div>`+sbHtml();
   if(!db.roster.length)return h+`<div class="empty">Agrega a tus jugadores. Se quedan guardados para todos los partidos.</div>`;
   const qi=qInfo(),qc=C0(),vis=db.roster.filter(p=>!qc.inv[p.id]);
   h+=invHtml();
-  h+=qBoard([0,1,2,3].map(i=>i<qc.qp.length?qc.qp[i]:(i===qi.q-1&&!qi.done?qi.live:null)),qi.done?-1:qi.q-1,qi.total,qpop);
   h+=`<div class="strip" id="strip">${vis.map(p=>`<div class="tile${C0().bn[p.id]?" bn":""}" data-id="${p.id}" style="--pc:${pcol(p)}">${C0().bn[p.id]?`<i class="tbi" aria-hidden="true">${IC_BENCH}</i>`:""}<b>${esc(numOf(p))}</b>${p.name?`<span>${esc(p.name)}</span>`:""}</div>`).join("")}</div>${vis.length?`<p class="mut" style="margin:0 2px 12px;font-size:13px">Toca un cuadro para ir a ese jugador. Al sumar algo, la pantalla sube sola. Mantén y arrastra los cuadros para ordenarlos o guardarlos en el inventario.</p>`:`<p class="mut" style="margin:0 2px 12px;font-size:13px">Todos tus jugadores están en el inventario. Toca uno para sacarlo.</p>`}`;
   h+=vis.map(p=>{const s=row(p.id),op=openP===p.id;return `<div class="player${op?" open":""}${stripPop===p.id||(teamPop&&teamPop.has(p.id))?" enter":""}"${teamPop&&teamPop.has(p.id)?` style="animation-delay:${teamPop.get(p.id)*110+250}ms;animation-fill-mode:both"`:""} id="pc${p.id}" data-id="${p.id}"><div class="head"><button class="numb" data-act="editnum" data-id="${p.id}" style="--pc:${pcol(p)}" aria-label="Cambiar número">${esc(numOf(p))}</button>${onBtn(p)}<div class="hit" role="button" tabindex="0" data-act="tgl" data-id="${p.id}" aria-expanded="${op}" aria-label="Mostrar u ocultar las opciones de ${esc(plabel(p))}"><div class="name">${esc(p.name||"Jugador")}${posChip(p)}</div><div class="pts">${d(s).pts}<small>puntos</small></div>${missW(p,s)}<span class="chev" aria-hidden="true"></span></div></div>${posBar(p)}<div class="pbody"><div class="pin"${op?"":" inert"}><div class="pin2"><div class="grid">`+
    C.map((c,i)=>`<div class="stat ${/^[mx][123]$/.test(c[0])?"shot":COL[c[0]]?"col":""}" style="--i:${i};${COL[c[0]]?`--c:${COL[c[0]]}`:""}"><b>${c[1]}</b><div class="n">${s[c[0]]||0}</div><div class="btns"><button class="minus" aria-label="Restar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="-1">−</button><button aria-label="Sumar ${c[1]}" data-act="n" data-id="${p.id}" data-k="${c[0]}" data-d="1">+</button></div></div>`).join("")+
@@ -826,7 +873,7 @@ function vAvg(){const l=agg();
   <div class="row"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><input id="file" type="file" accept=".json" hidden></div>`}
 function vHist(){
   if(open){const g=db.games.find(x=>x.id===open);if(g)return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>${gDetailInfo(g)}`+
-   (g.qp?qBoard(g.qp,-1,g.rows.reduce((a,r)=>a+d(r.s).pts,0)):"")+table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
+   table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
   if(!db.games.length)return `<div class="empty">Todavía no hay partidos guardados.</div>`;
   return db.games.slice().reverse().map(g=>gRow(g,g.rows)).join("")}
 
@@ -837,7 +884,7 @@ function gstats(g){let ok=0,bad=0,pts=0;
   return `<div class="gst"><span class="ok"><small>ACIERTOS</small><i>${ok}</i></span><span class="bad"><small>ERRORES</small><i>${bad}</i></span><span><small>PUNTOS</small><i>${pts}</i></span></div>`}
 let openP=null;
 let qpop=-1,tkDrag=null,tzT,benchPop=null,invPop=null,stripPop=null,teamPop=null,invPopSet=null,teamOnly=false;
-const C0=()=>{const c=db.cur;if(!Array.isArray(c.qp))c.qp=[];if(!Array.isArray(c.qf))c.qf=[];if(!c.to||typeof c.to!=="object")c.to={a:2,b:3};
+const C0=()=>{const c=db.cur;if(!Array.isArray(c.qp))c.qp=[];if(!Array.isArray(c.qf))c.qf=[];if(!Array.isArray(c.rq))c.rq=[];if(!c.to||typeof c.to!=="object")c.to={a:2,b:3};
   if(!c.bn||typeof c.bn!=="object")c.bn={};
   if(!c.inv||typeof c.inv!=="object")c.inv={};
   if(!Array.isArray(c.log))c.log=[];
@@ -886,7 +933,7 @@ function setOpen(id){
     c.classList.toggle("open",on);
     const hit=c.querySelector(".hit");if(hit)hit.setAttribute("aria-expanded",on);
     const pin=c.querySelector(".pin");if(pin)pin.toggleAttribute("inert",!on)})}
-const PCOL=["#d9674f","#e0963f","#4fa872","#3fa89d","#4a9cce","#8570cc","#b863bd","#c9588f"],pcol=p=>PCOL[Math.max(0,db.roster.findIndex(x=>x.id===p.id))%PCOL.length];
+const PCOL=["#d9674f","#e0963f","#4fa872","#3fa89d","#4a9cce","#8570cc","#b863bd","#c9588f"],pcol=p=>p.color||PCOL[Math.max(0,db.roster.findIndex(x=>x.id===p.id))%PCOL.length];
 const numOf=p=>(p.num!=null&&p.num!=="")?String(p.num):"–";
 const plabel=p=>{const n=(p.num!=null&&p.num!=="")?"#"+p.num:"";return (n+(p.name?" "+p.name:"")).trim()||"Jugador"};
 function askNum(o){
@@ -1159,6 +1206,7 @@ function loadTeam(tid,o){
   const t=TMS().find(x=>x.id===tid);if(!t)return;
   const all=tmAll(),c=C0(),members=t.pids.map(id=>all.find(p=>p.id===id)).filter(Boolean);
   if(!members.length){toast("info","Equipo vacío","Este equipo no tiene jugadores");return}
+  c.tn=t.name;
   const before=new Set(db.roster.filter(p=>!c.inv[p.id]).map(p=>p.id));
   members.forEach(m=>{if(!db.roster.find(x=>x.id===m.id))db.roster.push({id:m.id,name:m.name||"",num:m.num});delete c.inv[m.id]});
   const mset=new Set(members.map(m=>m.id)),away=[];
@@ -1205,7 +1253,7 @@ function render(){
   document.getElementById("app").innerHTML=tab==="game"?vGame():tab==="avg"?vAvg():tab==="board"?vBoard():tab==="notes"?vNotes():tab==="teams"?vTeams():tab==="log"?vLog():vHist();if(tab==="board")bInit();if(tab==="game"){initStrip();initInv()}updScore();updLeft()}
 
 document.getElementById("tabs").onclick=e=>{const b=e.target.closest("button");if(b){tab=b.dataset.tab;open=null;render()}};
-document.addEventListener("input",e=>{if(e.target.id==="nt"){db.nd=e.target.value;e.target.classList.remove("err");save()}if(e.target.id==="rival"){db.cur.rival=e.target.value;save()}if(e.target.id==="date"){db.cur.date=e.target.value;save()}});
+document.addEventListener("input",e=>{if(e.target.id==="nt"){db.nd=e.target.value;e.target.classList.remove("err");save()}if(e.target.id==="rival"){db.cur.rival=e.target.value;save();const q=document.getElementById("sbrn");if(q)q.textContent=e.target.value.trim()||"Rival"}if(e.target.id==="date"){db.cur.date=e.target.value;save()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));if(e.key==="Enter"&&e.target.id==="nm")act("addp");
   if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("hit")){e.preventDefault();act("tgl",e.target.dataset)}});
 document.addEventListener("change",e=>{if(e.target.id==="file"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{try{const n=JSON.parse(r.result);if(n.roster&&n.games){db=n;save();render();note("Respaldo cargado.")}}catch(x){note("El archivo no es válido.")}};r.readAsText(e.target.files[0])}});
@@ -1233,6 +1281,7 @@ function act(a,s){
       const id="p"+Date.now();db.roster.push({id,name:n||"",num});save();stripPop=id;render();stripPop=null;
       newPlayerFx(id,n||"",num)}})}
   else if(a==="lteam"){teamSheet(document.querySelector('[data-act="lteam"]'))}
+  else if(a==="rvp"){const c=db.cur;c.rp=Math.max(0,Math.min(300,(Number(c.rp)||0)+Number(s.id)));save();const q=document.getElementById("sbrs");if(q){q.textContent=c.rp;q.classList.remove("bump");void q.offsetWidth;q.classList.add("bump")}}
   else if(a==="tgl"){setOpen(openP===s.id?null:s.id)}
   else if(a==="editnum"){const p=db.roster.find(x=>x.id===s.id);if(!p)return;
     askNum({title:`Número de ${p.name?esc(p.name):"este jugador"}`,okText:"Guardar",num:p.num,editId:p.id,onOk:num=>{p.num=num;save();render()}})}
@@ -1256,14 +1305,14 @@ function act(a,s){
   else if(a==="end"){
     const rows=db.roster.map(p=>({id:p.id,name:p.name,num:p.num,s:row(p.id)})).filter(r=>Object.values(r.s).some(v=>v>0));
     if(!rows.length){note("Todavía no hay estadísticas que guardar.");return}
-    askRp({text:"¿Terminar el partido y guardarlo?",okText:"Guardar partido",onOk:rp=>{const qz=qInfo(),g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};if(db.cur.qp.length){g.qp=db.cur.qp.slice();if(!qz.done)g.qp.push(qz.live)}if(db.cur.log.length)g.log=db.cur.log.slice();if(rp!=null)g.rp=rp;
-    db.games.push(g);db.cur={rival:"",date:today(),rows:{}};C0();save();open=g.id;tab="teams";render()}})}
+    ask("¿Terminar el partido y guardarlo?",()=>{const rp=db.cur.rp==null?null:Math.max(0,Number(db.cur.rp)||0),qz=qInfo(),g={id:Date.now(),date:db.cur.date||today(),rival:db.cur.rival.trim(),rows};if(db.cur.qp.length){g.qp=db.cur.qp.slice();if(!qz.done)g.qp.push(qz.live)}if(db.cur.log.length)g.log=db.cur.log.slice();if(db.cur.rq&&db.cur.rq.length){g.rq=db.cur.rq.slice();if(g.qp&&g.rq.length<g.qp.length&&rp!=null)g.rq.push(Math.max(0,rp-g.rq.reduce((x,y)=>x+y,0)))}if(rp!=null)g.rp=rp;
+    if(db.cur.tn)g.tn=db.cur.tn;db.games.push(g);db.cur={rival:"",date:today(),rows:{}};window.sbOpen={me:false,rv:false};C0();save();open=g.id;tab="teams";render()},{no:"Cancelar",si:"Guardar partido"})}
   else if(a==="endq"){const q0=qInfo();if(q0.done)return;
     ask(`¿Seguro que quieres terminar el cuarto ${q0.q}? Se guardan sus ${q0.live} puntos.`,()=>{const z=qInfo(),c=C0();if(z.done)return;
-      db.roster.forEach(p=>{c.fb[p.id]=(db.cur.rows[p.id]&&db.cur.rows[p.id].fal)||0});c.qp.push(z.live);c.qf.push(z.fouls);c.cnt={};qpop=z.q-1;save();render();qpop=-1;
+      db.roster.forEach(p=>{c.fb[p.id]=(db.cur.rows[p.id]&&db.cur.rows[p.id].fal)||0});c.qp.push(z.live);c.qf.push(z.fouls);c.rq.push(Math.max(0,(Number(db.cur.rp)||0)-c.rq.reduce((a,b)=>a+b,0)));c.cnt={};qpop=z.q-1;save();render();qpop=-1;
       if(z.q===2)toast("info","Segunda mitad","Ahora tienes 3 tiempos fuera.");
       else if(z.q===4)toast("info","Cuarto 4 terminado","Ya puedes terminar el partido y guardarlo.")},{no:"No",si:"Sí"})}
-  else if(a==="delall"){ask("¿Borrar a TODOS los jugadores? Se borran también las estadísticas y los cuartos de este partido. Los partidos ya guardados no se borran.",()=>{db.roster=[];db.cur.rows={};db.cur.qp=[];db.cur.qf=[];db.cur.to={a:2,b:3};db.cur.bn={};db.cur.fb={};db.cur.inv={};db.cur.cnt={};db.cur.log=[];save();render()})}
+  else if(a==="delall"){ask("¿Borrar a TODOS los jugadores? Se borran también las estadísticas y los cuartos de este partido. Los partidos ya guardados no se borran.",()=>{db.roster=[];db.cur.rows={};db.cur.qp=[];db.cur.qf=[];db.cur.rq=[];db.cur.to={a:2,b:3};db.cur.bn={};db.cur.fb={};db.cur.inv={};db.cur.cnt={};db.cur.log=[];save();render()})}
   else if(a==="grp"){const g=db.games.find(x=>x.id===Number(s.id));if(!g)return;
     askRp({text:"Marcador del partido",value:g.rp,okText:"Guardar",onOk:rp=>{if(rp==null)delete g.rp;else g.rp=rp;save();render()}})}
   else if(a==="open"){open=Number(s.id);render()}
@@ -1624,8 +1673,9 @@ const gScoreText=g=>{const q=gResult(g);return q?`Quedó ${q.p} – ${q.r} (${q.
 const gRow=(g,rows,tm)=>{
   const L=tm?[{t:tm,cats:CATS.filter(c=>rows.some(r=>(tm.cats||{})[r.id]===c))}]:gTeams(g),tl=L.map(tcTags).join('<span class="gsep">·</span>');
   return `<div class="game"><div><b>${g.rival?"vs "+esc(g.rival):"Partido"}</b><div class="mut">${g.date} · ${plural(rows.length,"jugador","jugadores")}</div>${tl?`<div class="gti">${tl}</div>`:""}<div class="gti">${gScoreLine(g)}</div></div><div class="gr">${gstats({rows})}<button class="open" data-act="open" data-id="${g.id}">Ver</button></div></div>`};
-const gDetailInfo=g=>{const tl=gTeams(g).map(tcTags).join('<span class="gsep">·</span>');
-  return `<div class="gti" style="margin:0 0 10px">${tl}${tl?'<span class="gsep">·</span>':""}${gScoreLine(g)}<button class="ghost sv" data-act="grp" data-id="${g.id}" style="padding:6px 12px;font-size:13px">${g.rp==null?"Agregar":"Editar"} marcador del rival</button></div>`};
+const gDetailInfo=g=>{const tl=gTeams(g).map(tcTags).join('<span class="gsep">·</span>'),t0=(gTeams(g)[0]||{}).t,q=gResult(g),
+   nm=esc(g.tn||(t0&&t0.name)||"Mi equipo"),rn=esc((g.rival||"").trim()||"Rival");
+  return (tl?`<div class="gti" style="margin:0 0 10px">${tl}</div>`:"")+`<div class="sbx sbg"><div class="sbt me sg" data-gid="${g.id}"><small>${nm}</small><b>${gP(g)}</b><span class="sbl">${q?q.w:"Nosotros"}</span></div><div class="sbt rv sg" data-gid="${g.id}"><small>${rn}</small><b>${g.rp==null?"–":g.rp}</b><span class="sbl">Rival</span></div></div><div class="mut" style="font-size:12px;margin:-4px 0 10px;text-align:center">Mantén presionado un marcador para ver los cuartos</div>`};
 function askRp(o){
   const ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99";
   ov.innerHTML=`<div role="dialog" aria-modal="true" style="background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px;max-width:360px;width:100%"><p style="margin:0 0 12px;font-size:17px">${o.text}</p><label class="mut" for="rpin" style="display:block;margin:0 0 6px;font-size:13px">Puntos del rival (opcional)</label><input id="rpin" type="number" inputmode="numeric" min="0" max="300" placeholder="Ej. 24" value="${o.value==null?"":o.value}" style="width:100%;margin:0 0 14px"><div class="row" style="margin:0"><button class="ghost" id="rpno">Cancelar</button><button class="primary" id="rpok" style="flex:1">${o.okText}</button></div></div>`;
@@ -1727,7 +1777,7 @@ function tmFormView(){
   :`<div class="empty">Todavía no hay jugadores. Agrégalos en la pestaña Partido y vuelve aquí.</div>`}
   <div class="row"><button class="ghost" data-act="tmcancel">Cancelar</button><button class="primary" data-act="tmsave" style="flex:1">Guardar equipo</button></div>`}
 function tmGameDetail(g){return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>${gDetailInfo(g)}`+
-   (g.qp?qBoard(g.qp,-1,g.rows.reduce((a,r)=>a+d(r.s).pts,0)):"")+table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`}
+   table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`}
 
 function vTeams(){
   if(tmForm)return tmFormView();
@@ -1780,13 +1830,26 @@ function lpClose(){const m=document.getElementById("lpm");if(m)m.remove()}
 function lpMenu(x,y,id){
   lpClose();const p=lpPl(id);if(!p)return;
   const m=document.createElement("div");m.id="lpm";m.setAttribute("role","menu");
-  m.innerHTML=`<div class="lpt">${esc(plabel(p))}</div><button role="menuitem" data-k="note"><i aria-hidden="true">✍️</i>Escribir nota</button><button role="menuitem" data-k="game"><i aria-hidden="true">📊</i>Enviar estadísticas de este partido</button><button role="menuitem" data-k="all"><i aria-hidden="true">📚</i>Enviar estadísticas de todos los partidos</button>`;
+  m.innerHTML=`<div class="lpt">${esc(plabel(p))}</div><button role="menuitem" data-k="note"><i aria-hidden="true">✍️</i>Escribir nota</button>${db.roster.some(r=>r.id===id)?`<button role="menuitem" data-k="color"><i aria-hidden="true">🎨</i>Cambiar color</button>`:""}<button role="menuitem" data-k="game"><i aria-hidden="true">📊</i>Enviar estadísticas de este partido</button><button role="menuitem" data-k="all"><i aria-hidden="true">📚</i>Enviar estadísticas de todos los partidos</button>`;
   document.body.appendChild(m);
   const w=m.offsetWidth,h=m.offsetHeight,vw=innerWidth,vh=innerHeight;
   const l=Math.min(Math.max(8,x-w/2),vw-w-8);let tp=y-h-16,up=true;if(tp<8){tp=Math.min(y+20,vh-h-8);up=false}
   m.style.left=l+"px";m.style.top=tp+"px";m.style.transformOrigin=(x-l)+"px "+(up?"100%":"0")
   m.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const k=b.dataset.k;lpClose();
+    if(k==="color"){lpColor(x,y,id);return}
     lpSheet(id,k==="note"?"":k)})}
+const PSW=["#d9674f","#e0963f","#d9b73f","#4fa872","#3fa89d","#4a9cce","#8570cc","#b863bd","#c9588f","#8a93a0"];
+function lpColor(x,y,id){
+  lpClose();const p=db.roster.find(r=>r.id===id);if(!p)return;
+  const m=document.createElement("div");m.id="lpm";m.setAttribute("role","menu");
+  m.innerHTML=`<div class="lpt">Color de ${esc(plabel(p))}</div><div class="lpcs">${PSW.map(c=>`<button class="lpsw${pcol(p)===c?" on":""}" data-c="${c}" style="--sw:${c}" aria-label="Color ${c}"></button>`).join("")}</div><button role="menuitem" data-k="auto" style="margin-top:2px"><i aria-hidden="true">↺</i>Color automático</button>`;
+  document.body.appendChild(m);
+  const w=m.offsetWidth,h=m.offsetHeight,vw=innerWidth,vh=innerHeight;
+  const l=Math.min(Math.max(8,x-w/2),vw-w-8);let tp=y-h-16,up=true;if(tp<8){tp=Math.min(y+20,vh-h-8);up=false}
+  m.style.left=l+"px";m.style.top=tp+"px";m.style.transformOrigin=(x-l)+"px "+(up?"100%":"0");
+  m.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    if(b.dataset.k==="auto")delete p.color;else if(b.dataset.c)p.color=b.dataset.c;else return;
+    save();lpClose();render()})}
 function lpSheetClose(now){
   clearInterval(LP.iv);
   const b=document.getElementById("lpb"),s=document.getElementById("lps");
@@ -2098,9 +2161,31 @@ if(!window.__ftk){window.__ftk=1;
 
 document.getElementById("ftb").addEventListener("click",e=>ftOpen(e.currentTarget));
 render();
+/* ===== Marcador: mantén presionado y se divide en cuartos (se queda abierto) ===== */
+window.sbOpen={me:false,rv:false};
+(function(){let T=null,closeUp=null;
+ const cells=who=>{const c=C0(),qi=qInfo();let v,cur;
+  if(who==="me"){v=[0,1,2,3].map(i=>i<c.qp.length?c.qp[i]:(i===qi.q-1&&!qi.done?qi.live:null));cur=qi.done?-1:qi.q-1}
+  else{const sum=c.rq.reduce((a,b)=>a+b,0),rp=Number(c.rp)||0,done=c.qp.length>=4;v=[0,1,2,3].map(i=>i<c.rq.length?c.rq[i]:(i===c.qp.length&&!done?Math.max(0,rp-sum):null));cur=done?-1:c.qp.length}
+  return v.map((x,i)=>`<div class="qc${i===cur?" cur":""}${x==null?" nil":""}" style="--d:${i*55}ms;--x:${i%2?"-":""}60%;--y:${i<2?"-":""}60%"><small>C${i+1}</small><b>${x==null?"–":x}</b></div>`).join("")};
+ window.sbCells=cells;
+ const who=b=>b.classList.contains("me")?"me":"rv";
+ const gCells=b=>{const g=db.games.find(x=>x.id===Number(b.dataset.gid))||{},v=(who(b)==="me"?g.qp:g.rq)||[];
+  return [0,1,2,3].map(i=>{const x=v[i];return `<div class="qc${x==null?" nil":""}" style="--d:${i*55}ms;--x:${i%2?"-":""}60%;--y:${i<2?"-":""}60%"><small>C${i+1}</small><b>${x==null?"–":x}</b></div>`}).join("")};
+ const open=b=>{let q=b.querySelector(".sbq");if(!q){q=document.createElement("div");q.className="sbq";b.appendChild(q)}
+  q.innerHTML=b.dataset.gid?gCells(b):cells(who(b));b.classList.remove("unsplit","still");void b.offsetWidth;b.classList.add("split");if(!b.dataset.gid)window.sbOpen[who(b)]=true;try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
+ const close=b=>{if(!b.dataset.gid)window.sbOpen[who(b)]=false;b.classList.remove("split","still");b.classList.add("unsplit");setTimeout(()=>b.classList.remove("unsplit"),420)};
+ document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.closest(".sbt");if(!b||e.target.closest(".sbc"))return;clearTimeout(T);closeUp=null;
+  if(b.classList.contains("split")){closeUp=b;return}
+  T=setTimeout(()=>{T=null;open(b)},340)});
+ document.addEventListener("pointerup",()=>{clearTimeout(T);T=null;if(closeUp){const b=closeUp;closeUp=null;close(b)}},true);
+ document.addEventListener("pointercancel",()=>{clearTimeout(T);T=null;closeUp=null},true);
+ document.addEventListener("contextmenu",e=>{if(e.target.closest&&e.target.closest(".sbt"))e.preventDefault()});
+ document.addEventListener("scroll",()=>{if(T){clearTimeout(T);T=null}},true)})();
 if("serviceWorker" in navigator){const had=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!window.__rl){window.__rl=1;location.reload()}});
   navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
+
 </script>
 </body>
 </html>
