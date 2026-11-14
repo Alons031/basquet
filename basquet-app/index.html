@@ -1878,26 +1878,28 @@ function lpClose(){const m=document.getElementById("lpm");if(m)m.remove()}
 function lpMenu(x,y,id){
   lpClose();const p=lpPl(id);if(!p)return;
   const m=document.createElement("div");m.id="lpm";m.setAttribute("role","menu");
-  m.innerHTML=`<div class="lpt">${esc(plabel(p))}</div><button role="menuitem" data-k="note"><i aria-hidden="true">✍️</i>Escribir nota</button>${db.roster.some(r=>r.id===id)?`<button role="menuitem" data-k="color"><i aria-hidden="true">🎨</i>Cambiar color</button>`:""}<button role="menuitem" data-k="game"><i aria-hidden="true">📊</i>Enviar estadísticas de este partido</button><button role="menuitem" data-k="all"><i aria-hidden="true">📚</i>Enviar estadísticas de todos los partidos</button>`;
+  m.innerHTML=`<div class="lpt">${esc(plabel(p))}</div><button role="menuitem" data-k="note"><i aria-hidden="true">✍️</i>Escribir nota</button>${db.roster.some(r=>r.id===id)?`<button role="menuitem" data-k="color"><i aria-hidden="true">🌈</i>Cambiar color de este jugador</button><button role="menuitem" data-k="colorall"><i aria-hidden="true">🎨</i>Cambiar color de todos</button>`:""}<button role="menuitem" data-k="game"><i aria-hidden="true">📊</i>Enviar estadísticas de este partido</button><button role="menuitem" data-k="all"><i aria-hidden="true">📚</i>Enviar estadísticas de todos los partidos</button>`;
   document.body.appendChild(m);
   const w=m.offsetWidth,h=m.offsetHeight,vw=innerWidth,vh=innerHeight;
   const l=Math.min(Math.max(8,x-w/2),vw-w-8);let tp=y-h-16,up=true;if(tp<8){tp=Math.min(y+20,vh-h-8);up=false}
   m.style.left=l+"px";m.style.top=tp+"px";m.style.transformOrigin=(x-l)+"px "+(up?"100%":"0")
   m.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const k=b.dataset.k;lpClose();
     if(k==="color"){lpColor(x,y,id);return}
+    if(k==="colorall"){lpColor(x,y,id,true);return}
     lpSheet(id,k==="note"?"":k)})}
 const PSW=["#d9674f","#e0963f","#d9b73f","#4fa872","#3fa89d","#4a9cce","#8570cc","#b863bd","#c9588f","#8a93a0"];
-function lpColor(x,y,id){
+function lpColor(x,y,id,all){
   lpClose();const p=db.roster.find(r=>r.id===id);if(!p)return;
   const m=document.createElement("div");m.id="lpm";m.setAttribute("role","menu");
-  m.innerHTML=`<div class="lpt">Color de ${esc(plabel(p))}</div><div class="lpcs">${PSW.map(c=>`<button class="lpsw${pcol(p)===c?" on":""}" data-c="${c}" style="--sw:${c}" aria-label="Color ${c}"></button>`).join("")}</div><button role="menuitem" data-k="auto" style="margin-top:2px"><i aria-hidden="true">↺</i>Color automático</button>`;
+  m.innerHTML=`<div class="lpt">${all?"Color para todos los jugadores":"Color de "+esc(plabel(p))}</div><div class="lpcs">${PSW.map(c=>`<button class="lpsw${!all&&pcol(p)===c?" on":""}" data-c="${c}" style="--sw:${c}" aria-label="Color ${c}"></button>`).join("")}</div><button role="menuitem" data-k="auto" style="margin-top:2px"><i aria-hidden="true">↺</i>${all?"Colores automáticos para todos":"Color automático"}</button>`;
   document.body.appendChild(m);
   const w=m.offsetWidth,h=m.offsetHeight,vw=innerWidth,vh=innerHeight;
   const l=Math.min(Math.max(8,x-w/2),vw-w-8);let tp=y-h-16,up=true;if(tp<8){tp=Math.min(y+20,vh-h-8);up=false}
   m.style.left=l+"px";m.style.top=tp+"px";m.style.transformOrigin=(x-l)+"px "+(up?"100%":"0");
   m.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-    if(b.dataset.k==="auto")delete p.color;else if(b.dataset.c)p.color=b.dataset.c;else return;
-    save();lpClose();render()})}
+    const tg=all?db.roster:[p];
+    if(b.dataset.k==="auto")tg.forEach(r=>delete r.color);else if(b.dataset.c)tg.forEach(r=>{r.color=b.dataset.c});else return;
+    save();lpClose();render();if(all)toast("info","Color cambiado","Se aplicó a todos los jugadores")})}
 function lpSheetClose(now){
   clearInterval(LP.iv);
   const b=document.getElementById("lpb"),s=document.getElementById("lps");
