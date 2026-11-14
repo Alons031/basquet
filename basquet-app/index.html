@@ -2331,9 +2331,10 @@ window.sbOpen={me:false,rv:false};
     clean();
     if(cancel){toast("info","Nota cancelada","No se guardó nada");return}
     if(!txt){toast("info","No se escuchó nada","Toca el micrófono, habla y vuelve a tocarlo");return}
-    ensureNotes();db.notes.unshift({id:"n"+Date.now(),t:Date.now(),text:txt,voice:true});save();
+    ensureNotes();db.nd=(db.nd&&db.nd.trim()?db.nd.replace(/\s+$/,"")+" ":"")+txt;save();
     try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}
-    toast("info","Nota de voz guardada","La verás en la pestaña Notas");if(tab==="notes")render()};
+    const tb=document.querySelector('#tabs [data-tab="notes"]');if(tb)tb.click();else render();
+    toast("info","Listo, esto fue lo que dijiste","Revísalo y toca Guardar nota")};
   const start=e=>{
     e.preventDefault();
     if(!SR){toast("info","Sin dictado por voz","Este navegador no puede transcribir. Prueba en Chrome (Android) o Safari (iPhone)");return}
