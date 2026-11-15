@@ -727,6 +727,23 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 #micbar b{font-size:13px;font-variant-numeric:tabular-nums}
 #micbar span{grid-column:1/-1;font-size:12px;line-height:1.25;min-height:1.25em;max-height:3.75em;overflow:hidden;opacity:.95}
 #micbar button{grid-column:3;grid-row:1;justify-self:end;font:inherit;font-size:11px;color:#fff;background:rgba(255,255,255,.14);border:0;border-radius:8px;padding:3px 8px;cursor:pointer}
+
+/* ===== Filtro de cuartos en Bitácora ===== */
+.lgf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.lgf button{font:inherit;font-size:13px;font-weight:700;color:var(--tx,#e6e9ef);background:transparent;border:2px solid rgba(255,255,255,.18);border-radius:12px;padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:38px}
+.lgf button i{font-style:normal;font-size:11px;opacity:.7;background:rgba(255,255,255,.12);border-radius:9px;padding:1px 6px}
+.lgf button.on{background:#4a9cce;border-color:#4a9cce;color:#0d1620}
+.lgf button.on i{background:rgba(0,0,0,.18);opacity:1}
+
+/* ===== Mal ahí: ventana de motivo ===== */
+#malw{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;animation:malf .15s ease-out}
+@keyframes malf{from{opacity:0}}
+#malw .mbox{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px;max-width:340px;width:100%;display:flex;flex-direction:column;gap:9px}
+#malw p{margin:0 0 4px;font-size:18px;font-weight:700}
+#malw button{font:inherit;font-size:16px;font-weight:700;padding:13px 14px;border-radius:12px;border:2px solid rgba(133,112,204,.55);background:rgba(133,112,204,.18);color:inherit;cursor:pointer;text-align:left}
+#malw button:active{background:rgba(133,112,204,.4)}
+#malw button.mc{border-color:var(--line);background:transparent;opacity:.8;text-align:center;font-weight:600}
+.lp.pm{background:#8570cc;color:#fff}
 </style>
 </head>
 <body>
@@ -914,7 +931,7 @@ function vAvg(){const l=agg();
   <div class="row"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><input id="file" type="file" accept=".json" hidden></div>`}
 function vHist(){
   if(open){const g=db.games.find(x=>x.id===open);if(g)return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>${gDetailInfo(g)}`+
-   table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
+   table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false,g.id):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`;open=null}
   if(!db.games.length)return `<div class="empty">Todavía no hay partidos guardados.</div>`;
   return db.games.slice().reverse().map(g=>gRow(g,g.rows)).join("")}
 
@@ -960,14 +977,17 @@ const onBtn=p=>{const off=!!C0().bn[p.id],nm=p.name||"Jugador";
 let upT,clT;
 function goUp(){clearTimeout(upT);clearTimeout(clT);
   upT=setTimeout(()=>{if(tab!=="game")return;
-    const s=document.getElementById("strip");
-    if(s)window.scrollTo({top:Math.max(0,s.getBoundingClientRect().top+window.scrollY-90),behavior:"smooth"});
-    // primero sube hasta los jugadores y ya cuando llegó se cierra la tarjeta (así no se corta la subida)
-    const fin=()=>{window.removeEventListener("scrollend",fin);clearTimeout(clT);setOpen(null)};
-    if("onscrollend" in window)window.addEventListener("scrollend",fin,{once:true});
-    clT=setTimeout(fin,900)},450)}
+    // sube hasta el inicio de la página (marcador, inventario y jugadores) y solo ahí cierra la tarjeta
+    window.scrollTo({top:0,behavior:"smooth"});
+    let last=-1,n=0,tk=0;
+    const fin=()=>{clearTimeout(clT);setOpen(null);
+      requestAnimationFrame(()=>{if(window.scrollY>1)window.scrollTo({top:0,behavior:"auto"})})};
+    clT=setInterval(()=>{const y=window.scrollY;tk++;
+      if(y<=1){clearInterval(clT);fin();return}
+      if(y===last){if(++n>=3){clearInterval(clT);fin();return}}else{n=0;last=y}
+      if(tk>45){clearInterval(clT);fin()}},70)},300)}
 function goDown(id,wait){clearTimeout(upT);clearTimeout(clT);setTimeout(()=>{const c=document.getElementById("pc"+id);if(c)c.scrollIntoView({behavior:"smooth",block:"start"})},wait)}
-["touchstart","wheel"].forEach(ev=>window.addEventListener(ev,()=>clearTimeout(upT),{passive:true}));
+["touchstart","wheel"].forEach(ev=>window.addEventListener(ev,()=>{clearTimeout(upT);clearTimeout(clT)},{passive:true}));
 function setOpen(id){
   openP=id;
   document.querySelectorAll(".player").forEach(c=>{const on=c.dataset.id===id;
@@ -1200,8 +1220,10 @@ function logTO(h){C0().log.push({id:"c"+Date.now()+Math.random().toString(36).sl
 function logTOundo(h){const l=C0().log,i=l.map(e=>e.type==="to"&&e.h===h).lastIndexOf(true);if(i>=0)l.splice(i,1)}
 function lhead(e,who){
   if(e.type==="to")return `<div class="lp pt" aria-hidden="true">T</div><div class="lw"><div class="lname">Tiempo fuera</div><div class="lk">${e.h==="a"?"1.ª":"2.ª"} mitad</div></div>`;
+  if(e.type==="mal")return `<div class="lp pm" aria-hidden="true">!</div><div class="lw"><div class="lname">${who}</div><div class="lk">Mal ahí · ${MALW[e.why]||"Otro"}</div></div>`;
   if(e.type==="fal")return `<div class="lp pf" aria-hidden="true">F</div><div class="lw"><div class="lname">${who}</div><div class="lk">Falta</div></div>`;
   return `<div class="lp p${e.pts}" aria-hidden="true">+${e.pts}</div><div class="lw"><div class="lname">${who}</div><div class="lk">${PTN[e.pts]}</div></div>`}
+const MALW={pase:"Mal pase",nobal:"No fue por el balón",otro:"Otro"};
 const PTN={1:"Tiro de 1 punto",2:"Tiro de 2 puntos",3:"Tiro de 3 puntos"};
 function logList(list,live){
   return `<div class="lg">${list.slice().reverse().map(e=>{const p=live?db.roster.find(x=>x.id===e.pid):null,nm=p?p.name:e.name,nu=p?p.num:e.num;
@@ -1210,11 +1232,18 @@ function logList(list,live){
     return `<div class="le">${lhead(e,who)}<div class="lr"><span class="lq q${Math.min(4,Math.max(1,e.q||1))}">C${e.q||1}</span><small>${hm}</small></div></div>`}).join("")}</div>`}
 function logSum(list){const n={1:0,2:0,3:0};list.forEach(e=>{n[e.pts]++});
   return `<div class="lgs"><div><small>1 PUNTO</small><b>${n[1]}</b></div><div><small>2 PUNTOS</small><b>${n[2]}</b></div><div><small>3 PUNTOS</small><b>${n[3]}</b></div><div class="tt"><small>PUNTOS</small><b>${n[1]+2*n[2]+3*n[3]}</b></div></div>`}
-const logBlock=(list,live)=>`<h3 class="nh" style="margin:16px 0 10px">Bitácora</h3>`+logList(list,live);
+const logBlock=(list,live,gid)=>{
+  const fq=(window.lgG&&window.lgG[gid])||0,cnt=n=>list.filter(e=>(e.q||1)===n).length,lst=fq?list.filter(e=>(e.q||1)===fq):list;
+  const chips=`<div class="lgf" role="group" aria-label="Filtrar por cuarto"><button data-act="lgqg" data-g="${gid}" data-id="0" class="${fq===0?"on":""}">Todos</button>`+[1,2,3,4].map(n=>`<button data-act="lgqg" data-g="${gid}" data-id="${n}" class="${fq===n?"on":""}">C${n}<i>${cnt(n)}</i></button>`).join("")+`</div>`;
+  const pl=lst.filter(e=>e.pts),sm=fq&&pl.length?logSum(pl):"";
+  return `<h3 class="nh" style="margin:16px 0 10px">Bitácora</h3>`+chips+sm+(lst.length?logList(lst,live):`<div class="empty">No hay movimientos en el cuarto ${fq}.</div>`)};
 function vLog(){const c=C0(),qi=qInfo(),lp=c.log.reduce((a,e)=>a+(e.pts||0),0);
   const old=qi.total>lp?`<p class="mut">Hay ${qi.total-lp} puntos de antes de activar el registro que no aparecen aquí.</p>`:"";
   if(!c.log.length)return `<h3 class="nh" style="margin:0 0 10px">Bitácora</h3><div class="empty">Aún no hay movimientos. Aquí aparecen las canastas de 1, 2 y 3 puntos, las faltas y los tiempos fuera, con el nombre del jugador y el cuarto.</div>${old}`;
-  return `<h3 class="nh" style="margin:0 0 10px">Bitácora</h3>`+logList(c.log,true)+old}
+  const fq=window.lgQ||0,cnt=n=>c.log.filter(e=>(e.q||1)===n).length,lst=fq?c.log.filter(e=>(e.q||1)===fq):c.log;
+  const chips=`<div class="lgf" role="group" aria-label="Filtrar por cuarto"><button data-act="lgq" data-id="0" class="${fq===0?"on":""}">Todos</button>`+[1,2,3,4].map(n=>`<button data-act="lgq" data-id="${n}" class="${fq===n?"on":""}">C${n}<i>${cnt(n)}</i></button>`).join("")+`</div>`;
+  const pl=lst.filter(e=>e.pts),sm=fq&&pl.length?logSum(pl):"";
+  return `<h3 class="nh" style="margin:0 0 10px">Bitácora</h3>`+chips+sm+(lst.length?logList(lst,true):`<div class="empty">No hay movimientos en el cuarto ${fq}.</div>`)+(fq?"":old)}
 const IC_TEAM='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="17" cy="9" r="2.5" fill="currentColor"/><path d="M2.5 19c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5zM14 19c0-2.4 1.4-4.3 3.6-4.3 2.2 0 3.9 1.7 3.9 4.3z" fill="currentColor"/></svg>';
 function teamSheet(btn){
   if(document.getElementById("tsov"))return;
@@ -1301,8 +1330,18 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelect
   if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("hit")){e.preventDefault();act("tgl",e.target.dataset)}});
 document.addEventListener("change",e=>{if(e.target.id==="file"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{try{const n=JSON.parse(r.result);if(n.roster&&n.games){db=n;save();render();note("Respaldo cargado.")}}catch(x){note("El archivo no es válido.")}};r.readAsText(e.target.files[0])}});
 document.addEventListener("click",e=>{if(!e.target.closest(".posbar,.posb"))document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));const b=e.target.closest("[data-act]");if(b)act(b.dataset.act,b.dataset)});
+function malAsk(id){
+  const p=db.roster.find(x=>x.id===id)||{};
+  const o=document.createElement("div");o.id="malw";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","¿Qué pasó en el mal ahí?");
+  o.innerHTML=`<div class="mbox"><p>¿Qué pasó${p.name?" con "+esc(p.name):""}?</p><button data-w="pase">Mal pase</button><button data-w="nobal">No fue por el balón</button><button data-w="otro">Otro</button><button class="mc" data-w="">Cancelar</button></div>`;
+  const close=()=>{o.remove();document.removeEventListener("keydown",kd)};
+  const kd=e=>{if(e.key==="Escape")close()};document.addEventListener("keydown",kd);
+  o.addEventListener("click",e=>{const b=e.target.closest("button");if(!b){if(e.target===o)close();return}
+    const w=b.dataset.w;close();if(w)act("n",{id,k:"mal",d:"1",ok:"1",why:w})});
+  document.body.appendChild(o);const f=o.querySelector("button");if(f)f.focus({preventScroll:true})}
 function act(a,s){
   if(a.startsWith("tm"))return tmAct(a,s);
+  if(a==="n"&&s.k==="mal"&&Number(s.d)>0&&!s.ok){malAsk(s.id);return}
   if(a==="posopen"){const bar=document.querySelector("#pc"+s.id+" .posbar");if(!bar)return;const was=bar.classList.contains("show");
     document.querySelectorAll(".posbar.show").forEach(x=>x.classList.remove("show"));
     if(!was){const hd=bar.parentElement.querySelector(".head");bar.style.top=(hd.offsetTop+hd.offsetHeight+4)+"px";bar.classList.add("show")}return}
@@ -1315,6 +1354,8 @@ function act(a,s){
     db.nd="";db.ne=null;save();render();toast("info","Nota guardada","Ya puedes enviarla por WhatsApp");return}
   if(a==="ncancel"){db.ne=null;db.nd="";save();render();return}
   if(a==="nedit"){const n=db.notes.find(x=>x.id===s.id);if(!n)return;db.ne=n.id;db.nd=n.text;save();render();window.scrollTo({top:0,behavior:"smooth"});const ta=document.getElementById("nt");if(ta)ta.focus({preventScroll:true});return}
+  if(a==="lgqg"){window.lgG=window.lgG||{};window.lgG[s.g]=Number(s.id)||0;render();return}
+  if(a==="lgq"){window.lgQ=Number(s.id)||0;render();return}
   if(a==="nplay"){const bt2=document.querySelector('[data-act="nplay"][data-id="'+s.id+'"]');
     window.AUD.get(s.id).then(bl=>{if(!bl){toast("info","Audio no disponible","No se encontró el audio de esta nota");return}
       document.querySelectorAll("audio.nau").forEach(x=>{x.pause();x.remove()});
@@ -1342,6 +1383,9 @@ function act(a,s){
     if(/^m[123]$/.test(s.k)){const dd=(r[s.k]||0)-b0,c=C0(),pt=Number(s.k[1]);
       if(dd>0){const p=db.roster.find(x=>x.id===s.id)||{};c.log.push({id:"c"+Date.now()+Math.random().toString(36).slice(2,6),pid:s.id,name:p.name||"",num:p.num,pts:pt,q:qInfo().q,t:Date.now()})}
       else if(dd<0){const i=c.log.map(e=>e.pid===s.id&&e.pts===pt).lastIndexOf(true);if(i>=0)c.log.splice(i,1)}}
+    if(s.k==="mal"){const dd=(r.mal||0)-b0,c=C0();
+      if(dd>0){const p=db.roster.find(x=>x.id===s.id)||{};c.log.push({id:"c"+Date.now()+Math.random().toString(36).slice(2,6),type:"mal",pid:s.id,name:p.name||"",num:p.num,why:s.why||"otro",q:qInfo().q,t:Date.now()})}
+      else if(dd<0){const i=c.log.map(e=>e.type==="mal"&&e.pid===s.id).lastIndexOf(true);if(i>=0)c.log.splice(i,1)}}
     save();render();goUp();if(s.k==="fal"){const f1=qInfo().fouls;if(fb<4&&f1>=4)bonusToast(f1)}}
   else if(a==="stash"){const go=()=>{const t=document.querySelector(`#strip .tile[data-id="${s.id}"]`);if(!t)return;
       const r=t.getBoundingClientRect(),c=t.cloneNode(true);c.classList.add("drag");c.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;document.body.appendChild(c);stash(s.id,c,t)};
@@ -1825,7 +1869,7 @@ function tmFormView(){
   :`<div class="empty">Todavía no hay jugadores. Agrégalos en la pestaña Partido y vuelve aquí.</div>`}
   <div class="row"><button class="ghost" data-act="tmcancel">Cancelar</button><button class="primary" data-act="tmsave" style="flex:1">Guardar equipo</button></div>`}
 function tmGameDetail(g){return `<div class="row"><button class="ghost" data-act="back">← Volver</button></div><div class="ghead"><h2>${g.rival?"vs "+esc(g.rival)+" · ":""}<span style="white-space:nowrap">${g.date}</span></h2>${gstats(g)}</div>${gDetailInfo(g)}`+
-   table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`}
+   table(g.rows.map(r=>({name:plabel(r),t:r.s})),false,true)+(g.log&&g.log.length?logBlock(g.log,false,g.id):"")+`<div class="row" style="margin-top:12px"><button class="ghost" data-act="delg" data-id="${g.id}">Borrar este partido</button></div>`}
 
 function vTeams(){
   if(tmForm)return tmFormView();
