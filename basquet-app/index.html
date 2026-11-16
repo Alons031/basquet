@@ -769,6 +769,12 @@ button:focus-visible,[role=button]:focus-visible,[tabindex]:focus-visible{outlin
 /* ===== T. fallados con desglose ===== */
 td.tfc{white-space:nowrap}
 .tfb{display:block;font-size:10.5px;font-weight:600;opacity:.72;margin-top:1px;letter-spacing:.01em}
+
+/* ===== Cargar partido: elegir equipo ===== */
+#malw .gmt small{display:block;font-size:12px;opacity:.75;margin:0 0 5px}
+#malw .gmtc{display:flex;flex-wrap:wrap;gap:6px}
+#malw button.gmtb{padding:7px 11px;font-size:13px;border-radius:999px;text-align:center;border-color:rgba(255,255,255,.25);background:transparent}
+#malw button.gmtb.on{background:#4a9cce;border-color:#4a9cce;color:#0d1620}
 </style>
 </head>
 <body>
@@ -939,9 +945,11 @@ const curPts=()=>{let n=0;for(const k in (db.cur.rows||{})){const r=db.cur.rows[
 const sbo=w=>window.sbOpen&&window.sbOpen[w]?" split still":"",sbq=w=>window.sbOpen&&window.sbOpen[w]&&window.sbCells?`<div class="sbq">${window.sbCells(w)}</div>`:"";
 function sbHtml(){const c=db.cur,rp=Number(c.rp)||0;
   return `<div class="sbx" id="sbx"><div class="sbt me${sbo("me")}"><small id="sbmn">${esc(c.tn||"Mi equipo")}</small><b id="sbms">${curPts()}</b><span class="sbl">Nosotros</span>${sbq("me")}</div><div class="sbt rv${sbo("rv")}${window.sbPick?" pick":""}"><small id="sbrn">${esc((c.rival||"").trim()||"Rival")}</small><b id="sbrs">${rp}</b><div class="sbpk" aria-label="Puntos del rival"><button data-act="rvp" data-id="1" style="--i:0">+1</button><button data-act="rvp" data-id="2" style="--i:1">+2</button><button data-act="rvp" data-id="3" style="--i:2">+3</button></div><button class="sbmn" data-act="rvp" data-id="-1" aria-label="Quitar 1 punto al rival">−1</button>${sbq("rv")}</div></div>`}
+function curEmpty(){const r=db.cur.rows||{};const lg=(db.cur.log)||[];return !lg.length&&!Object.values(r).some(x=>x&&typeof x==="object"&&Object.values(x).some(v=>typeof v==="number"&&v>0))}
 function vGame(){
   let h=`<div class="row"><input id="rival" placeholder="Rival (opcional)" value="${esc(db.cur.rival)}"><input id="date" type="date" value="${db.cur.date}"></div>
-  <div class="row"><button class="ghost sv tmb" data-act="lteam" aria-haspopup="dialog">${IC_TEAM}Agregar equipo</button><button class="primary" data-act="addp" style="flex:1;padding:14px 10px">Agregar jugador</button></div>`+sbHtml();
+  <div class="row"><button class="ghost sv tmb" data-act="lteam" aria-haspopup="dialog">${IC_TEAM}Agregar equipo</button><button class="primary" data-act="addp" style="flex:1;padding:14px 10px">Agregar jugador</button></div>`+
+  (curEmpty()?`<div class="row"><button class="ghost sv" data-act="gmload" style="flex:1">${IC_UP}Cargar partido</button></div>`:"")+sbHtml();
   if(!db.roster.length)return h+`<div class="empty">Agrega a tus jugadores. Se quedan guardados para todos los partidos.</div>`;
   const qi=qInfo(),qc=C0(),vis=db.roster.filter(p=>!qc.inv[p.id]);
   h+=invHtml();
@@ -1443,6 +1451,7 @@ function act(a,s){
   else if(a==="gdl"){const g=db.games.find(x=>x.id===Number(s.id));if(!g)return;
     const out={tipo:"basquet-partido",v:1,exportado:Date.now(),equipo:g.tn||"",game:Object.assign({},g,{src:g.src||("g"+g.id)})};
     saveTxt("partido-"+(slug(g.rival||"sin-rival")||"partido")+"-"+g.date+".json",JSON.stringify(out),"application/json");return}
+  else if(a==="gmload"){gmPick(null);return}
   else if(a==="delg"){ask("¿Borrar este partido? Los promedios se recalculan.",()=>{db.games=db.games.filter(x=>x.id!==Number(s.id));open=null;save();render()})}
   else if(a==="exp"){const u=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})),l=document.createElement("a");l.href=u;l.download="respaldo-basquet.json";l.click()}
   else if(a==="imp"){document.getElementById("file").click()}
@@ -1864,30 +1873,40 @@ function tmImport(txt){
   toast("info","Equipo cargado",esc(t.name)+" · "+plural(t.pids.length,"jugador","jugadores")+" · "+plural(nuevos,"partido nuevo","partidos nuevos"))}
 document.addEventListener("change",e=>{if(e.target.id==="tmgfile"&&e.target.files[0]){const r=new FileReader();r.onload=()=>gmLoad(String(r.result),tmSel);r.onerror=()=>toast("info","No se pudo leer el archivo","Intenta de nuevo");r.readAsText(e.target.files[0]);e.target.value=""}});
 function gmLoad(txt,tid){
-  const t=TMS().find(x=>x.id===tid);if(!t)return;
+  const T=TMS(),fixed=tid?T.find(x=>x.id===tid):null;
+  if(tid&&!fixed)return;
   let o;try{o=JSON.parse(txt.replace(/^\ufeff/,""))}catch(e){toast("info","Archivo no válido","Elige un archivo de partido descargado desde la app");return}
   const g0=o&&o.game?o.game:o;
   if(!g0||!Array.isArray(g0.rows)||!g0.rows.length||!g0.rows.every(r=>r&&r.id&&r.s)){toast("info","Archivo no válido","No parece un partido de esta app");return}
   const src=g0.src||(o&&o.tipo?"g"+g0.id:null);
   if(src&&db.games.some(x=>x.src===src)){toast("info","Ese partido ya está cargado","No lo agrego otra vez para no duplicar estadísticas");return}
   const picked=new Set(g0.rows.map(r=>r.id));
+  const nm0=String(o.equipo||g0.tn||"").trim().toLowerCase();
+  let sel=fixed?fixed.id:((nm0&&T.find(x=>x.name.trim().toLowerCase()===nm0))||{}).id||"";
   const ov=document.createElement("div");ov.id="malw";ov.setAttribute("role","dialog");ov.setAttribute("aria-modal","true");ov.setAttribute("aria-label","¿Quién jugó?");
   const rowsH=()=>g0.rows.map(r=>`<button type="button" class="gmr${picked.has(r.id)?" on":""}" data-id="${esc(r.id)}" aria-pressed="${picked.has(r.id)}"><i aria-hidden="true">${picked.has(r.id)?"✓":""}</i><span>${esc(plabel(r))}</span><em>${d(r.s).pts} pts</em></button>`).join("");
-  const draw=()=>{ov.innerHTML=`<div class="mbox gmbox"><p>¿Quién jugó?</p><small class="gmh">${esc(g0.rival?"vs "+g0.rival+" · ":"")}${esc(g0.date||"")} · se agrega a ${esc(t.name)}</small><div class="gmlist">${rowsH()}</div><button data-w="ok" ${picked.size?"":"disabled"}>Agregar partido (${picked.size})</button><button class="mc" data-w="">Cancelar</button></div>`};
+  const teamH=()=>fixed?"":`<div class="gmt"><small>¿De qué equipo es?</small><div class="gmtc"><button type="button" class="gmtb${sel===""?" on":""}" data-t="">Sin equipo</button>${T.map(x=>`<button type="button" class="gmtb${sel===x.id?" on":""}" data-t="${esc(x.id)}">${esc(x.name)}</button>`).join("")}</div></div>`;
+  const draw=()=>{const tn=sel?(T.find(x=>x.id===sel)||{}).name:"";ov.innerHTML=`<div class="mbox gmbox"><p>¿Quién jugó?</p><small class="gmh">${esc(g0.rival?"vs "+g0.rival+" · ":"")}${esc(g0.date||"")}${tn?" · se agrega a "+esc(tn):" · sin equipo"}</small>${teamH()}<div class="gmlist">${rowsH()}</div><button data-w="ok" ${picked.size?"":"disabled"}>Agregar partido (${picked.size})</button><button class="mc" data-w="">Cancelar</button></div>`};
   const close=()=>{ov.remove();document.removeEventListener("keydown",kd)};
   const kd=e=>{if(e.key==="Escape")close()};document.addEventListener("keydown",kd);
   ov.addEventListener("click",e=>{const b=e.target.closest("button");if(!b){if(e.target===ov)close();return}
+    if(b.classList.contains("gmtb")){sel=b.dataset.t;const sc=ov.querySelector(".gmlist").scrollTop;draw();ov.querySelector(".gmlist").scrollTop=sc;return}
     if(b.classList.contains("gmr")){const id=b.dataset.id;picked.has(id)?picked.delete(id):picked.add(id);const sc=ov.querySelector(".gmlist").scrollTop;draw();ov.querySelector(".gmlist").scrollTop=sc;return}
     if(b.dataset.w==="ok"){
+      const t=sel?T.find(x=>x.id===sel):null;
       const rows=JSON.parse(JSON.stringify(g0.rows.filter(r=>picked.has(r.id))));if(!rows.length)return;
-      const ng=Object.assign({},g0,{rows,id:Date.now(),tn:t.name,src:src||("imp"+Date.now())});
+      const ng=Object.assign({},g0,{rows,id:Date.now(),src:src||("imp"+Date.now())});
+      if(t)ng.tn=t.name;else delete ng.tn;
       if(Array.isArray(ng.log))ng.log=ng.log.filter(en=>!en.pid||picked.has(en.pid));
       db.games.push(ng);
-      rows.forEach(r=>{if(t.pids.indexOf(r.id)<0)t.pids.push(r.id)});
-      save();close();open=ng.id;tab="teams";render();window.scrollTo(0,0);
-      toast("info","Partido agregado","Se sumó a "+t.name+" con "+rows.length+" jugador"+(rows.length===1?"":"es"));return}
+      if(t)rows.forEach(r=>{if(t.pids.indexOf(r.id)<0)t.pids.push(r.id)});
+      save();close();open=ng.id;tab="teams";tmView=null;render();window.scrollTo(0,0);
+      toast("info","Partido agregado",(t?"Se sumó a "+t.name:"Quedó sin equipo")+" con "+rows.length+" jugador"+(rows.length===1?"":"es"));return}
     close()});
   draw();document.body.appendChild(ov)}
+function gmPick(tid){const f=document.createElement("input");f.type="file";f.accept=".json,application/json";f.style.display="none";
+  f.onchange=()=>{const fl=f.files[0];if(!fl){f.remove();return}const r=new FileReader();r.onload=()=>gmLoad(String(r.result),tid||null);r.onerror=()=>toast("info","No se pudo leer el archivo","Intenta de nuevo");r.readAsText(fl);f.remove()};
+  document.body.appendChild(f);f.click()}
 document.addEventListener("change",e=>{if(e.target.id==="tmfile"&&e.target.files[0]){const r=new FileReader();r.onload=()=>tmImport(String(r.result));r.onerror=()=>note("No se pudo leer el archivo.");r.readAsText(e.target.files[0]);e.target.value=""}});
 function tmDetail(){
   const T=TMS(),t=T.find(x=>x.id===tmSel);
@@ -1937,7 +1956,7 @@ function vTeams(){
   if(open){const g=db.games.find(x=>x.id===open);if(g)return tmGameDetail(g);open=null}
   if(tmView==="team")return tmDetail();
   const gl=db.games.length?`<h3 class="nh" style="margin:18px 0 8px">Partidos guardados (${db.games.length})</h3>`+db.games.slice().reverse().map(g=>gRow(g,g.rows)).join(""):"";
-  return tmList()+gl+`<div class="row" style="margin-top:16px"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><button class="ghost" data-act="tmload">Cargar equipo</button><input id="file" type="file" accept=".json" hidden><input id="tmfile" type="file" accept=".html,.htm,.json" hidden></div>`}
+  return tmList()+gl+`<div class="row" style="margin-top:16px"><button class="ghost" data-act="exp">Descargar respaldo</button><button class="ghost" data-act="imp">Cargar respaldo</button><button class="ghost" data-act="gmload">Cargar partido</button><button class="ghost" data-act="tmload">Cargar equipo</button><input id="file" type="file" accept=".json" hidden><input id="tmfile" type="file" accept=".html,.htm,.json" hidden></div>`}
 function tmAct(a,s){
   const T=TMS();let top=false;
   if(a==="tmnew"){tmForm={id:null,name:"",pids:[],cats:{},rama:tmFilter||"v"};top=true}
